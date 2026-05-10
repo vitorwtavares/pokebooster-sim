@@ -15,5 +15,3 @@ export const CARDS_PER_PACK = 10
 export const COMMONS_PER_PACK = 4
 export const UNCOMMONS_PER_PACK = 3
 export const RARES_PER_PACK = 3
-
-export const DESKTOP_HEADER_HEIGHT = '100px' //40px button + 60px mt

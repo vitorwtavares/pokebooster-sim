@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react'
 
-import { Backdrop, Credits, Header, PackOpening } from '@/components'
+import { Backdrop, Credits, PackOpening } from '@/components'
 import { SelectedPackContext } from '@/context/SelectedPack'
 import { usePackOpeningState } from '@/hooks/usePackOpeningState'
 
@@ -25,7 +25,6 @@ const App = () => {
   return (
     <S.HeaderAndContentContainer>
       <Backdrop />
-      <Header isHidden={phase !== 'idle'} />
       <S.ContentWrapper>
         <PackOpening
           openingRun={openingRun}

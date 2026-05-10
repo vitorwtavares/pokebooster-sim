@@ -26,10 +26,16 @@ export const IdleContainer = styled(Flex)`
 `
 
 export const PackWrapper = styled(Box)`
-  width: 240px;
-  height: 400px;
+  width: 288px;
+  height: 480px;
   animation: ${float} 3.5s ease-in-out infinite;
   filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 1));
+
+  @media only screen and (max-width: 768px) {
+    width: min(288px, calc(100vw - 48px));
+    height: auto;
+    aspect-ratio: 3 / 5;
+  }
 `
 
 export const PackCard = styled(Box, {
