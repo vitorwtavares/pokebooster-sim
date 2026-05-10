@@ -17,6 +17,8 @@ const pulse = keyframes`
   50% { opacity: 1; }
 `
 
+const PACK_CRIMP_SPLIT = '14.4%'
+
 export const IdleContainer = styled(Flex)`
   flex-direction: column;
   align-items: center;
@@ -28,6 +30,36 @@ export const PackWrapper = styled(Box)`
   height: 400px;
   animation: ${float} 3.5s ease-in-out infinite;
   filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 1));
+`
+
+export const PackCard = styled(Box, {
+  shouldForwardProp: (prop) => prop !== '$isCutting',
+})<{ $isCutting: boolean }>`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 70%;
+  transform-style: preserve-3d;
+  will-change: transform;
+`
+
+export const PackSurface = styled(Box)`
+  position: absolute;
+  inset: 0;
+`
+
+export const PackCapSlice = styled(Box)`
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: inset(0 0 calc(100% - ${PACK_CRIMP_SPLIT}) 0 round 12px 12px 0 0);
+`
+
+export const PackBodySlice = styled(Box)`
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: inset(${PACK_CRIMP_SPLIT} 0 0 0 round 0 0 12px 12px);
 `
 
 export const PackImage = styled.img`
@@ -106,7 +138,7 @@ export const PackBottomStrip = styled(Box)`
     rgba(0, 0, 0, 0.28) 0%,
     rgba(0, 0, 0, 0.08) 100%
   );
-  border-top: 1px solid rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
   pointer-events: none;
 `
 
@@ -122,10 +154,56 @@ export const PackLogo = styled.img`
   user-select: none;
 `
 
-export const SwipeHint = styled.div`
+export const SwipeHint = styled.div<{ $isHidden?: boolean }>`
   color: rgba(255, 255, 255, 0.8);
   font-size: 15px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  animation: ${pulse} 2.2s ease-in-out infinite;
+  animation: ${({ $isHidden }) =>
+    $isHidden ? 'none' : `${pulse} 2.2s ease-in-out infinite`};
+  opacity: ${({ $isHidden }) => ($isHidden ? 0 : 1)};
+  pointer-events: none;
+  transform: ${({ $isHidden }) =>
+    $isHidden ? 'translateY(14px)' : 'translateY(0)'};
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+`
+
+export const CutTracker = styled(Box, {
+  shouldForwardProp: (prop) => prop !== '$isInteractive',
+})<{ $isInteractive: boolean }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 18%;
+  cursor: ew-resize;
+  touch-action: none;
+  z-index: 4;
+  pointer-events: ${({ $isInteractive }) => ($isInteractive ? 'auto' : 'none')};
+`
+
+export const CutLine = styled(Box, {
+  shouldForwardProp: (prop) => prop !== '$isVisible',
+})<{ $isVisible: boolean }>`
+  position: absolute;
+  top: calc(14% - 2px);
+  left: 0;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.95) 40%,
+    rgba(255, 76, 76, 0.95) 100%
+  );
+  box-shadow:
+    0 0 18px rgba(255, 76, 76, 0.55),
+    0 0 4px rgba(255, 255, 255, 0.95);
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
+  will-change: transform, opacity;
+  pointer-events: none;
+  z-index: 3;
 `

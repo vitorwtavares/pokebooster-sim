@@ -1,11 +1,14 @@
 import { Drawer, CloseButton, useDisclosure } from '@chakra-ui/react'
 import { useRef, useState } from 'react'
-import pokeball from '@/assets/pokeball.png'
 import { PackSelectorList } from '@/components'
 
 import * as S from './Header.styles'
 
-const Header = () => {
+interface HeaderProps {
+  isHidden?: boolean
+}
+
+const Header = ({ isHidden = false }: HeaderProps) => {
   const { open, onOpen, onClose } = useDisclosure()
 
   const selectPackButtonRef = useRef<HTMLButtonElement>(null)
@@ -13,7 +16,7 @@ const Header = () => {
   const [searchTerm, setSearchTerm] = useState<string | null>(null)
 
   return (
-    <S.HeaderContainer>
+    <S.HeaderContainer $isHidden={isHidden}>
       <S.SelectBoosterPackButton onClick={onOpen} ref={selectPackButtonRef}>
         Select booster pack
       </S.SelectBoosterPackButton>
