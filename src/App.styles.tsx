@@ -1,6 +1,5 @@
 import { Flex } from '@chakra-ui/react'
 import styled from '@emotion/styled'
-import { DESKTOP_HEADER_HEIGHT } from './utils/constants'
 
 export const HeaderAndContentContainer = styled(Flex)`
   flex-direction: column;
@@ -10,7 +9,7 @@ export const HeaderAndContentContainer = styled(Flex)`
 
 export const ContentWrapper = styled(Flex)`
   width: 100%;
-  height: calc(100vh - ${DESKTOP_HEADER_HEIGHT});
+  min-height: 100vh;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
