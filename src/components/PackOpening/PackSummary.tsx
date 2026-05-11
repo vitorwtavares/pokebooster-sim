@@ -77,7 +77,7 @@ const PackSummary: FC<PackSummaryProps> = ({ cards, onOpenAnother }) => {
               <S.PullImage
                 alt={card.name ?? 'Pokemon card'}
                 draggable={false}
-                src={card.images.small}
+                src={card.images.large}
               />
             </S.PullCardMotion>
           </S.PullCardButton>
@@ -90,18 +90,13 @@ const PackSummary: FC<PackSummaryProps> = ({ cards, onOpenAnother }) => {
       </S.SummaryFooter>
       <AnimatePresence>
         {inspectedCard ? (
-          <S.InspectorOverlay
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            initial={{ opacity: 0 }}
-            onClick={() => setInspectedCardId(null)}
-          >
-            <S.InspectorViewport
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 18 }}
-              initial={{ opacity: 0, y: 18 }}
-              onClick={(event) => event.stopPropagation()}
-            >
+          <S.InspectorOverlay onClick={() => setInspectedCardId(null)}>
+            <S.InspectorBackdrop
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }}
+            />
+            <S.InspectorViewport onClick={(event) => event.stopPropagation()}>
               <S.InspectorHint>Click or press Esc to close</S.InspectorHint>
               <S.InspectorCardMotion
                 layoutId={`summary-card-${inspectedCard.id}`}

@@ -71,7 +71,6 @@ export const PullCardButton = styled.button`
   border: none;
   background: transparent;
   cursor: zoom-in;
-  border-radius: 16px;
   transition: transform 0.2s ease;
 
   &:hover {
@@ -95,7 +94,7 @@ export const PullImage = styled(Image)`
   height: auto;
   aspect-ratio: 18 / 25;
   object-fit: cover;
-  border-radius: 16px;
+  border-radius: 8px;
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
 `
 
@@ -107,12 +106,20 @@ export const InspectorOverlay = styled(motion.div)`
   align-items: center;
   justify-content: center;
   padding: 24px;
+`
+
+export const InspectorBackdrop = styled(motion.div)`
+  position: absolute;
+  inset: 0;
   background: rgba(5, 7, 12, 0.58);
   backdrop-filter: blur(8px);
 `
 
 export const InspectorViewport = styled(motion.div)`
-  width: min(78vw, 520px, calc((100dvh - 140px) * 18 / 25));
+  position: relative;
+  z-index: 1;
+  width: auto;
+  max-width: min(78vw, 520px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -131,7 +138,8 @@ export const InspectorHint = styled(Text)`
 `
 
 export const InspectorCardMotion = styled(motion.button)`
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   padding: 0;
   border: none;
   background: transparent;
@@ -143,14 +151,13 @@ export const InspectorCardMotion = styled(motion.button)`
 `
 
 export const InspectorImage = styled(Image)`
-  width: 100%;
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 140px);
   height: auto;
-  aspect-ratio: 18 / 25;
-  object-fit: cover;
   border-radius: 22px;
-  box-shadow:
-    0 36px 64px rgba(0, 0, 0, 0.38),
-    0 0 0 1px rgba(255, 255, 255, 0.06);
+  box-shadow: 0 36px 64px rgba(0, 0, 0, 0.38);
 `
 
 export const SummaryFooter = styled(Flex)`
