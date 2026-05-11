@@ -101,11 +101,6 @@ export const CardName = styled(Text)`
   text-align: center;
   line-height: 1.05;
   text-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
-
-  @media only screen and (max-width: 768px) {
-    text-align: center;
-    font-size: 32px;
-  }
 `
 
 export const CardRarity = styled(Text)`

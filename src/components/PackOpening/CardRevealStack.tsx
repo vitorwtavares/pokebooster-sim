@@ -72,10 +72,7 @@ const CardRevealStack: FC<CardRevealStackProps> = ({
       <S.RevealContainer>
         <S.StatePanel>
           <S.CardName>Pack cleared</S.CardName>
-          <S.HelperText>
-            All 10 cards have been revealed. Phase 6 can build the summary from
-            here, but the full reveal loop is now in place.
-          </S.HelperText>
+          <S.HelperText>All 10 cards have been revealed.</S.HelperText>
           <S.ActionButton onClick={onOpenAnother}>
             Open another pack
           </S.ActionButton>
