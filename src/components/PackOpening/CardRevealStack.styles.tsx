@@ -1,6 +1,8 @@
 import { Box, Button, Flex, Spinner, Text } from '@chakra-ui/react'
 import styled from '@emotion/styled'
 
+import cardBack from '@/assets/card-back.png'
+
 export const RevealContainer = styled(Flex)`
   width: 100%;
   flex-direction: column;
@@ -30,11 +32,13 @@ export const StackBackCard = styled(Box, {
   position: absolute;
   inset: 0;
   border-radius: 18px;
-  background: linear-gradient(
-    180deg,
-    rgba(34, 48, 84, 0.96) 0%,
-    rgba(18, 26, 45, 0.98) 100%
-  );
+  background-color: rgba(18, 26, 45, 0.98);
+  background-image:
+    linear-gradient(rgba(10, 16, 28, 0.08), rgba(10, 16, 28, 0.08)),
+    url(${cardBack});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   box-shadow:
     0 24px 45px rgba(0, 0, 0, 0.35),
     inset 0 0 0 2px rgba(255, 255, 255, 0.12);
@@ -81,7 +85,7 @@ export const ActiveCardDetails = styled(Flex, {
   min-height: 58px;
   opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   transform: ${({ $isVisible }) =>
-    $isVisible ? 'translateY(0)' : 'translateY(10px)'};
+    $isVisible ? 'translateY(0)' : 'translateY(-10px)'};
   transition-property: opacity, transform;
   transition-duration: 0.45s, 0.45s;
   transition-timing-function: ease, ease;
