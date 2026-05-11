@@ -8,10 +8,15 @@ import * as S from './PackSummary.styles'
 
 interface PackSummaryProps {
   cards: Card[]
+  isGodPack: boolean
   onOpenAnother: () => void
 }
 
-const PackSummary: FC<PackSummaryProps> = ({ cards, onOpenAnother }) => {
+const PackSummary: FC<PackSummaryProps> = ({
+  cards,
+  isGodPack,
+  onOpenAnother,
+}) => {
   const [inspectedCardId, setInspectedCardId] = useState<string | null>(null)
   const inspectorCardRef = useRef<HTMLButtonElement | null>(null)
 
@@ -55,9 +60,14 @@ const PackSummary: FC<PackSummaryProps> = ({ cards, onOpenAnother }) => {
   return (
     <S.SummaryContainer>
       <S.SummaryHeader>
-        <S.SummaryHeading>Your Pulls</S.SummaryHeading>
+        <S.SummaryHeadingRow>
+          <S.SummaryHeading>Your Pulls</S.SummaryHeading>
+          {isGodPack ? <S.SummaryBadge>God pack</S.SummaryBadge> : null}
+        </S.SummaryHeadingRow>
         <S.SummarySubheading>
-          All 10 cards from this pack, ready for one last look.
+          {isGodPack
+            ? 'Every card in this pack rolled as a high-rarity hit.'
+            : 'All 10 cards from this pack, ready for one last look.'}
         </S.SummarySubheading>
       </S.SummaryHeader>
       <S.SummaryGrid>

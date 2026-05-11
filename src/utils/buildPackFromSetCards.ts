@@ -1,12 +1,49 @@
 import { Card } from '@/types/api'
 import {
   COMMONS_PER_PACK,
+  CARDS_PER_PACK,
+  GOD_PACK_CHANCE,
   RARES_PER_PACK,
   UNCOMMONS_PER_PACK,
 } from '@/utils/constants'
 
 const RARE_RARITY_QUERY =
   '(rarity:"Rare" OR rarity:"Rare Holo" OR rarity:"Rare Holo EX" OR rarity:"Rare Holo GX" OR rarity:"Rare Holo V" OR rarity:"Rare Holo VMAX" OR rarity:"Rare Holo VSTAR" OR rarity:"Rare Ultra" OR rarity:"Rare Secret" OR rarity:"Rare Rainbow" OR rarity:"Rare Shiny" OR rarity:"Hyper Rare" OR rarity:"Illustration Rare" OR rarity:"Special Illustration Rare" OR rarity:"Amazing Rare" OR rarity:"Radiant Rare" OR rarity:"Trainer Gallery Rare Holo")'
+const GOD_PACK_RARITY_KEYWORDS = [
+  'illustration rare',
+  'special illustration rare',
+  'rare ultra',
+  'rare secret',
+  'rare rainbow',
+  'rare shiny',
+  'hyper rare',
+  'radiant rare',
+  'amazing rare',
+  'trainer gallery rare holo',
+]
+const GOD_PACK_SUBTYPE_KEYWORDS = [
+  'ex',
+  'gx',
+  'lv.x',
+  'pokemon-ex',
+  'pokemon-gx',
+  'pokemon-v',
+  'pokemon-vmax',
+  'pokemon-vstar',
+  'shiny',
+  'tag team',
+  'tera',
+  'ultra beast',
+  'v',
+  'v-union',
+  'vmax',
+  'vstar',
+]
+
+interface BuiltPack {
+  cards: Card[]
+  isGodPack: boolean
+}
 
 const pickRandom = <T>(arr: T[], n: number): T[] => {
   const copy = [...arr]
@@ -53,14 +90,40 @@ const isRareCard = (card: Card) => {
   )
 }
 
+const isGodPackEligibleCard = (card: Card) => {
+  const rarity = card.rarity?.toLowerCase() ?? ''
+  const subtypes = card.subtypes?.map((subtype) => subtype.toLowerCase()) ?? []
+
+  if (GOD_PACK_RARITY_KEYWORDS.some((keyword) => rarity.includes(keyword))) {
+    return true
+  }
+
+  return subtypes.some((subtype) =>
+    GOD_PACK_SUBTYPE_KEYWORDS.some((keyword) => subtype.includes(keyword)),
+  )
+}
+
 export const buildPackFromSetCards = (
   setId: string,
   setCards: Card[],
-): Card[] => {
+): BuiltPack => {
   const commonsPool = setCards.filter((card) => card.rarity === 'Common')
   const uncommonsPool = setCards.filter((card) => card.rarity === 'Uncommon')
   const raresPool = setCards.filter(isRareCard)
+  const godPackPool = setCards.filter(isGodPackEligibleCard)
   const usedIds = new Set<string>()
+  const shouldRollGodPack = Math.random() < GOD_PACK_CHANCE
+
+  if (shouldRollGodPack && raresPool.length > 0) {
+    return {
+      cards: takeUniqueCards(
+        [godPackPool, raresPool, uncommonsPool, commonsPool],
+        CARDS_PER_PACK,
+        usedIds,
+      ),
+      isGodPack: true,
+    }
+  }
 
   const commons = takeUniqueCards(
     [commonsPool, uncommonsPool, raresPool],
@@ -89,5 +152,8 @@ export const buildPackFromSetCards = (
     )
   }
 
-  return packCards
+  return {
+    cards: packCards,
+    isGodPack: false,
+  }
 }

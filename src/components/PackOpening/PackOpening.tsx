@@ -34,6 +34,7 @@ const OPENING_PREVIEW_DURATION_MS = 700
 interface PackRequestState {
   cards: CardType[]
   errorMessage: string | null
+  isGodPack: boolean
   isLoading: boolean
 }
 
@@ -65,6 +66,7 @@ const PackOpening: FC<PackOpeningProps> = ({
   const [packRequestState, setPackRequestState] = useState<PackRequestState>({
     cards: [],
     errorMessage: null,
+    isGodPack: false,
     isLoading: false,
   })
   const isSelectedSetReady =
@@ -99,6 +101,7 @@ const PackOpening: FC<PackOpeningProps> = ({
       setPackRequestState({
         cards: [],
         errorMessage: null,
+        isGodPack: false,
         isLoading: true,
       })
 
@@ -106,6 +109,7 @@ const PackOpening: FC<PackOpeningProps> = ({
         setPackRequestState({
           cards: [],
           errorMessage: 'The cards for this set are still loading.',
+          isGodPack: false,
           isLoading: false,
         })
         return
@@ -113,9 +117,12 @@ const PackOpening: FC<PackOpeningProps> = ({
 
       if (latestPackBuildRunRef.current !== nextPackBuildRun) return
 
+      const nextPack = buildPackFromSetCards(selectedPack.id, selectedSetCards)
+
       setPackRequestState({
-        cards: buildPackFromSetCards(selectedPack.id, selectedSetCards),
+        cards: nextPack.cards,
         errorMessage: null,
+        isGodPack: nextPack.isGodPack,
         isLoading: false,
       })
     }
@@ -147,6 +154,7 @@ const PackOpening: FC<PackOpeningProps> = ({
     return (
       <PackSummary
         cards={packRequestState.cards}
+        isGodPack={packRequestState.isGodPack}
         onOpenAnother={onOpenAnother}
       />
     )

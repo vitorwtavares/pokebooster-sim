@@ -22,6 +22,31 @@ export const SummaryHeader = styled(Flex)`
   gap: 10px;
 `
 
+export const SummaryHeadingRow = styled(Flex)`
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+`
+
+export const SummaryBadge = styled(Text)`
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 232, 150, 1),
+    rgba(252, 166, 79, 1)
+  );
+  color: rgba(46, 22, 2, 0.96);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  box-shadow: 0 16px 34px rgba(255, 170, 0, 0.2);
+  transform: translateY(2px);
+`
+
 export const SummaryHeading = styled(Text)`
   font-size: 42px;
   line-height: 1;
