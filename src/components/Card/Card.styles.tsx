@@ -34,9 +34,14 @@ export const CardContainer = styled(Flex, {
   transform: ${({ shouldCardBeFlipped }) =>
     shouldCardBeFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'};
   will-change: transform;
+  border-radius: 15px;
 
   &:focus-visible {
     outline: none;
+    box-shadow:
+      0 20px 36px rgba(0, 0, 0, 0.24),
+      0 0 30px rgba(255, 255, 255, 0.28),
+      0 0 68px rgba(255, 255, 255, 0.2);
   }
 `
 
