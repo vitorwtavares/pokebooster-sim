@@ -196,17 +196,25 @@ export const RetryButton = styled(Button)`
   min-width: 140px;
   height: 36px;
   border-radius: 999px;
-  background: rgb(255, 255, 255);
+  background-color: rgb(255, 255, 255);
   color: rgba(18, 24, 38, 0.96);
   border: none;
   backdrop-filter: none;
-  transition:
-    background 0.18s ease,
-    transform 0.18s ease;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.85),
+    0 0 12px rgba(255, 255, 255, 0),
+    0 0 28px rgba(255, 255, 255, 0),
+    0 10px 22px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.3s ease-in-out;
+  will-change: box-shadow;
 
   &:hover {
-    background: rgb(221, 221, 221);
     border: none;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.85),
+      0 0 12px rgba(240, 245, 255, 0.14),
+      0 0 28px rgba(240, 245, 255, 0.08),
+      0 10px 22px rgba(0, 0, 0, 0.12);
   }
 `
 

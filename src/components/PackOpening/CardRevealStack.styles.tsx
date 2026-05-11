@@ -91,7 +91,7 @@ export const ActiveCardDetails = styled(Flex, {
 `
 
 export const CardName = styled(Text)`
-  font-size: 42px;
+  font-size: 38px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.96);
   text-align: center;
@@ -100,7 +100,7 @@ export const CardName = styled(Text)`
 
   @media only screen and (max-width: 768px) {
     text-align: center;
-    font-size: 34px;
+    font-size: 32px;
   }
 `
 
@@ -143,23 +143,25 @@ export const CounterDivider = styled(Box)`
 `
 
 export const HelperText = styled(Text)`
-  color: rgba(255, 255, 255, 0.76);
+  color: rgba(255, 255, 255, 0.68);
   text-align: center;
-  max-width: 480px;
+  max-width: 430px;
+  line-height: 1.55;
 `
 
 export const StatePanel = styled(Flex)`
   width: min(420px, calc(100vw - 32px));
-  min-height: 280px;
-  padding: 32px 28px;
-  border-radius: 28px;
-  background: rgba(6, 11, 22, 0.74);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px);
+  min-height: 256px;
+  padding: 30px 28px;
+  border-radius: 24px;
+  background: rgba(12, 15, 22, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(14px);
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 20px;
   text-align: center;
 `
 
@@ -171,16 +173,26 @@ export const LoadingSpinner = styled(Spinner)`
 
 export const ActionButton = styled(Button)`
   min-width: 180px;
+  height: 36px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #ffd45c 0%, #ff8f3f 100%);
-  color: #101522;
+  background-color: rgb(255, 255, 255);
+  color: rgba(18, 24, 38, 0.96);
+  border: none;
   font-weight: 700;
-  transition:
-    transform 0.2s ease,
-    filter 0.2s ease;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.85),
+    0 0 12px rgba(255, 255, 255, 0),
+    0 0 28px rgba(255, 255, 255, 0),
+    0 10px 22px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.3s ease-in-out;
+  will-change: box-shadow;
 
   &:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.02);
+    border: none;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.85),
+      0 0 12px rgba(240, 245, 255, 0.14),
+      0 0 28px rgba(240, 245, 255, 0.08),
+      0 10px 22px rgba(0, 0, 0, 0.12);
   }
 `
