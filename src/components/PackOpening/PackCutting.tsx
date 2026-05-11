@@ -10,10 +10,14 @@ import * as S from './PackIdle.styles'
 import PackVisual from './PackVisual'
 
 interface PackCuttingProps {
+  canOpenPack: boolean
+  hasLoadError: boolean
   phase: PackOpeningPhase
+  packHintText: string
   onCutCancel: () => void
   onCutComplete: () => void
   onCutFinish: () => void
+  onRetryLoadSet: () => void
   onCutStart: () => void
 }
 
@@ -24,10 +28,14 @@ const CUT_FINISH_DURATION_SECONDS = 0.22
 const CUT_RETURN_DURATION_SECONDS = 0.18
 
 const PackCutting: FC<PackCuttingProps> = ({
+  canOpenPack,
+  hasLoadError,
   phase,
+  packHintText,
   onCutCancel,
   onCutComplete,
   onCutFinish,
+  onRetryLoadSet,
   onCutStart,
 }) => {
   const { selectedPack } = useContext(SelectedPackContext)
@@ -64,6 +72,8 @@ const PackCutting: FC<PackCuttingProps> = ({
   }
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (!canOpenPack) return
+
     isPointerActiveRef.current = true
     trackerBoundsRef.current =
       trackerRef.current?.getBoundingClientRect() ?? null
@@ -112,7 +122,7 @@ const PackCutting: FC<PackCuttingProps> = ({
 
   const isCutting = phase === 'cutting' || phase === 'finishing'
   const isIdle = phase === 'idle'
-  const isInteractive = phase === 'cutting' || isIdle
+  const isInteractive = canOpenPack && (phase === 'cutting' || isIdle)
   const isDetached = phase === 'finishing'
 
   return (
@@ -124,7 +134,11 @@ const PackCutting: FC<PackCuttingProps> = ({
             height: '100%',
           }}
         >
-          <S.PackCard ref={packRef} $isCutting={isCutting}>
+          <S.PackCard
+            ref={packRef}
+            $isCutting={isCutting}
+            $isInteractive={canOpenPack}
+          >
             {!isDetached && <PackVisual logoSrc={logoSrc} packArt={packArt} />}
             {isDetached && (
               <>
@@ -178,7 +192,18 @@ const PackCutting: FC<PackCuttingProps> = ({
           </S.PackCard>
         </motion.div>
       </S.PackWrapper>
-      <S.SwipeHint $isHidden={!isIdle}>Swipe the top to open</S.SwipeHint>
+      {hasLoadError ? (
+        <S.ErrorActions>
+          <S.SwipeHintError $isHidden={!isIdle}>
+            {packHintText}
+          </S.SwipeHintError>
+          {isIdle && (
+            <S.RetryButton onClick={onRetryLoadSet}>Retry</S.RetryButton>
+          )}
+        </S.ErrorActions>
+      ) : (
+        <S.SwipeHint $isHidden={!isIdle}>{packHintText}</S.SwipeHint>
+      )}
     </S.IdleContainer>
   )
 }

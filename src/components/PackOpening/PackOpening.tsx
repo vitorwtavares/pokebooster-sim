@@ -52,16 +52,28 @@ const PackOpening: FC<PackOpeningProps> = ({
   const { selectedPack } = useContext(SelectedPackContext)
   const packArt = usePackArt(selectedPack.id)
   const logoSrc = selectedPack.logoUrl ?? fallbackLogo
-  const { data: selectedSetCards } = usePackCardsQuery(
-    selectedPack.id,
-    selectedPack.total,
-  )
+  const {
+    data: selectedSetCards,
+    error: selectedSetCardsError,
+    isLoading: isSelectedSetLoading,
+    refetch: refetchSelectedSetCards,
+  } = usePackCardsQuery(selectedPack.id, selectedPack.total)
   const latestPackBuildRunRef = useRef(0)
   const [packRequestState, setPackRequestState] = useState<PackRequestState>({
     cards: [],
     errorMessage: null,
     isLoading: false,
   })
+  const isSelectedSetReady =
+    Boolean(selectedSetCards?.length) &&
+    !isSelectedSetLoading &&
+    !selectedSetCardsError
+  const hasSelectedSetLoadError = Boolean(selectedSetCardsError)
+  const packHintText = hasSelectedSetLoadError
+    ? 'Pack failed to load'
+    : isSelectedSetReady
+      ? 'Swipe the top to open'
+      : 'Pack is loading'
 
   useEffect(() => {
     if (phase !== 'opening') return
@@ -129,10 +141,16 @@ const PackOpening: FC<PackOpeningProps> = ({
 
   return (
     <PackCutting
+      canOpenPack={isSelectedSetReady}
+      hasLoadError={hasSelectedSetLoadError}
       phase={phase}
+      packHintText={packHintText}
       onCutCancel={onCutCancel}
       onCutComplete={onCutComplete}
       onCutFinish={onCutFinish}
+      onRetryLoadSet={() => {
+        void refetchSelectedSetCards()
+      }}
       onCutStart={onCutStart}
     />
   )

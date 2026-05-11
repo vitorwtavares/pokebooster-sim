@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Button, Flex } from '@chakra-ui/react'
 import { keyframes } from '@emotion/react'
 import styled from '@emotion/styled'
 
@@ -39,11 +39,14 @@ export const PackWrapper = styled(Box)`
 `
 
 export const PackCard = styled(Box, {
-  shouldForwardProp: (prop) => prop !== '$isCutting',
-})<{ $isCutting: boolean }>`
+  shouldForwardProp: (prop) =>
+    prop !== '$isCutting' && prop !== '$isInteractive',
+})<{ $isCutting: boolean; $isInteractive?: boolean }>`
   position: relative;
   width: 100%;
   height: 100%;
+  cursor: ${({ $isInteractive }) =>
+    $isInteractive ? 'default' : 'not-allowed'};
   transform-origin: 50% 70%;
   transform-style: preserve-3d;
   will-change: transform;
@@ -176,6 +179,37 @@ export const SwipeHint = styled.div<{ $isHidden?: boolean }>`
     transform 0.2s ease;
 `
 
+export const SwipeHintError = styled(SwipeHint)`
+  color: rgba(235, 75, 75, 0.96);
+`
+
+export const ErrorActions = styled(Flex)`
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+`
+
+export const RetryButton = styled(Button)`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgb(255, 255, 255);
+  color: rgba(18, 24, 38, 0.96);
+  border: none;
+  backdrop-filter: none;
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+
+  &:hover {
+    background: rgb(221, 221, 221);
+    border: none;
+  }
+`
+
 export const CutTracker = styled(Box, {
   shouldForwardProp: (prop) => prop !== '$isInteractive',
 })<{ $isInteractive: boolean }>`
@@ -184,10 +218,10 @@ export const CutTracker = styled(Box, {
   left: 0;
   width: 100%;
   height: 18%;
-  cursor: ew-resize;
+  cursor: ${({ $isInteractive }) => ($isInteractive ? 'ew-resize' : 'inherit')};
   touch-action: none;
   z-index: 4;
-  pointer-events: ${({ $isInteractive }) => ($isInteractive ? 'auto' : 'none')};
+  pointer-events: auto;
 `
 
 export const CutLine = styled(Box, {
