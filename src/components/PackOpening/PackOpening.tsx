@@ -1,130 +1,127 @@
-import { FC, useContext, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { FC, useContext, useEffect, useRef, useState } from 'react'
 
 import fallbackLogo from '@/assets/fallback-logo.png'
 import { SelectedPackContext } from '@/context/SelectedPack'
+import { usePackCardsQuery } from '@/hooks/usePackCardsQuery'
 import { usePackArt } from '@/hooks/usePackArt'
 import { PackOpeningPhase } from '@/hooks/usePackOpeningState'
+import { Card as CardType } from '@/types/api'
 
+import CardRevealStack from './CardRevealStack'
 import PackCutting from './PackCutting'
-import * as S from './PackIdle.styles'
+import PackTear from './PackTear'
 
 interface PackOpeningProps {
   openingRun: number
+  isTopCardFlipped: boolean
   phase: PackOpeningPhase
+  revealedIndex: number
+  onAdvanceCard: (cardsCount: number) => void
   onCutCancel: () => void
   onCutComplete: () => void
   onCutFinish: () => void
   onCutStart: () => void
-  onOpeningPreviewComplete: () => void
+  onFlipCard: () => void
+  onOpenAnother: () => void
+  onOpeningAnimationComplete: () => void
 }
 
-const OPENING_PREVIEW_DURATION_MS = 1200
+const OPENING_PREVIEW_DURATION_MS = 700
 
-interface PackVisualProps {
-  logoSrc: string
-  packArt: string | null
+interface PackRequestState {
+  cards: CardType[]
+  errorMessage: string | null
+  isLoading: boolean
 }
-
-const PackVisual: FC<PackVisualProps> = ({ logoSrc, packArt }) =>
-  packArt ? (
-    <S.PackImage src={packArt} alt="Booster pack" draggable={false} />
-  ) : (
-    <S.PackFallback>
-      <S.PackTopStrip />
-      <S.PackLogo src={logoSrc} alt="" draggable={false} />
-      <S.PackBottomStrip />
-    </S.PackFallback>
-  )
 
 const PackOpening: FC<PackOpeningProps> = ({
   openingRun,
+  isTopCardFlipped,
   phase,
+  revealedIndex,
+  onAdvanceCard,
   onCutCancel,
   onCutComplete,
   onCutFinish,
   onCutStart,
-  onOpeningPreviewComplete,
+  onFlipCard,
+  onOpenAnother,
+  onOpeningAnimationComplete,
 }) => {
   const { selectedPack } = useContext(SelectedPackContext)
   const packArt = usePackArt(selectedPack.id)
   const logoSrc = selectedPack.logoUrl ?? fallbackLogo
+  const { refetch } = usePackCardsQuery(selectedPack.id, selectedPack.total)
+  const latestRequestIdRef = useRef(0)
+  const [packRequestState, setPackRequestState] = useState<PackRequestState>({
+    cards: [],
+    errorMessage: null,
+    isLoading: false,
+  })
 
   useEffect(() => {
     if (phase !== 'opening') return
 
     const resetOpeningTimeout = window.setTimeout(
-      onOpeningPreviewComplete,
+      onOpeningAnimationComplete,
       OPENING_PREVIEW_DURATION_MS,
     )
 
     return () => window.clearTimeout(resetOpeningTimeout)
-  }, [onOpeningPreviewComplete, phase, openingRun])
+  }, [onOpeningAnimationComplete, phase, openingRun])
+
+  useEffect(() => {
+    if (phase !== 'opening') return
+
+    const requestId = latestRequestIdRef.current + 1
+    latestRequestIdRef.current = requestId
+
+    const loadPackCards = async () => {
+      setPackRequestState({
+        cards: [],
+        errorMessage: null,
+        isLoading: true,
+      })
+
+      const result = await refetch()
+
+      if (latestRequestIdRef.current !== requestId) return
+
+      if (result.error) {
+        setPackRequestState({
+          cards: [],
+          errorMessage: 'The cards could not be loaded for this pack.',
+          isLoading: false,
+        })
+        return
+      }
+
+      setPackRequestState({
+        cards: result.data ?? [],
+        errorMessage: null,
+        isLoading: false,
+      })
+    }
+
+    void loadPackCards()
+  }, [openingRun, refetch, phase])
 
   if (phase === 'opening') {
+    return <PackTear logoSrc={logoSrc} packArt={packArt} />
+  }
+
+  if (phase === 'revealing') {
     return (
-      <S.IdleContainer>
-        <motion.div
-          animate={{
-            opacity: [0.65, 1, 0.72],
-            rotate: [0, -3, 3, 0],
-            scale: [0.98, 1.05, 1],
-            y: [20, -14, -6],
-          }}
-          initial={{ opacity: 0, scale: 0.92, y: 32 }}
-          key={openingRun}
-          transition={{ duration: 1.1, times: [0, 0.4, 0.75, 1] }}
-        >
-          <S.PackWrapper>
-            <S.PackCard $isCutting={true}>
-              <S.PackBodySlice>
-                <S.PackSurface>
-                  <PackVisual logoSrc={logoSrc} packArt={packArt} />
-                </S.PackSurface>
-              </S.PackBodySlice>
-              <motion.div
-                animate={{
-                  opacity: [1, 1, 0.15],
-                  rotate: [0, -8, -15],
-                  y: [0, -26, -54],
-                }}
-                initial={{ opacity: 1, rotate: 0, y: 0 }}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  transformOrigin: 'top center',
-                  zIndex: 2,
-                }}
-                transition={{ duration: 0.5, times: [0, 0.45, 1] }}
-              >
-                <S.PackCapSlice>
-                  <S.PackSurface>
-                    <PackVisual logoSrc={logoSrc} packArt={packArt} />
-                  </S.PackSurface>
-                </S.PackCapSlice>
-              </motion.div>
-              <motion.div
-                animate={{
-                  opacity: [0, 0.85, 0.2],
-                  scale: [0.85, 1.1, 1.25],
-                }}
-                initial={{ opacity: 0, scale: 0.75 }}
-                style={{
-                  position: 'absolute',
-                  inset: '20% 12%',
-                  borderRadius: '18px',
-                  background:
-                    'radial-gradient(circle, rgba(255,236,179,0.9) 0%, rgba(255,206,84,0.25) 45%, rgba(255,255,255,0) 78%)',
-                  pointerEvents: 'none',
-                  zIndex: 1,
-                }}
-                transition={{ duration: 0.8 }}
-              />
-            </S.PackCard>
-          </S.PackWrapper>
-        </motion.div>
-        <S.SwipeHint $isHidden={true}>Swipe the top to open</S.SwipeHint>
-      </S.IdleContainer>
+      <CardRevealStack
+        cards={packRequestState.cards}
+        errorMessage={packRequestState.errorMessage}
+        isLoading={packRequestState.isLoading}
+        isTopCardFlipped={isTopCardFlipped}
+        onAdvanceCard={() => onAdvanceCard(packRequestState.cards.length)}
+        onFlipCard={onFlipCard}
+        onOpenAnother={onOpenAnother}
+        revealedIndex={revealedIndex}
+      />
     )
   }
 

@@ -7,6 +7,7 @@ import { usePackArt } from '@/hooks/usePackArt'
 import { PackOpeningPhase } from '@/hooks/usePackOpeningState'
 
 import * as S from './PackIdle.styles'
+import PackVisual from './PackVisual'
 
 interface PackCuttingProps {
   phase: PackOpeningPhase
@@ -16,27 +17,11 @@ interface PackCuttingProps {
   onCutStart: () => void
 }
 
-interface PackVisualProps {
-  logoSrc: string
-  packArt: string | null
-}
-
 const MINIMUM_CUT_PROGRESS = 0.6
 const MAXIMUM_CUT_PROGRESS = 1
 const MINIMUM_CUT_PROGRESS_CSS = 0.06
 const CUT_FINISH_DURATION_SECONDS = 0.22
 const CUT_RETURN_DURATION_SECONDS = 0.18
-
-const PackVisual: FC<PackVisualProps> = ({ logoSrc, packArt }) =>
-  packArt ? (
-    <S.PackImage src={packArt} alt="Booster pack" draggable={false} />
-  ) : (
-    <S.PackFallback>
-      <S.PackTopStrip />
-      <S.PackLogo src={logoSrc} alt="" draggable={false} />
-      <S.PackBottomStrip />
-    </S.PackFallback>
-  )
 
 const PackCutting: FC<PackCuttingProps> = ({
   phase,

@@ -11,10 +11,15 @@ const App = () => {
   const {
     phase,
     openingRun,
+    revealedIndex,
+    isTopCardFlipped,
     startCut,
     cancelCut,
     completeCut,
     startOpening,
+    beginReveal,
+    flipTopCard,
+    advanceCard,
     resetOpening,
   } = usePackOpeningState()
 
@@ -27,13 +32,18 @@ const App = () => {
       <Backdrop />
       <S.ContentWrapper>
         <PackOpening
+          isTopCardFlipped={isTopCardFlipped}
           openingRun={openingRun}
           phase={phase}
+          revealedIndex={revealedIndex}
+          onAdvanceCard={advanceCard}
           onCutCancel={cancelCut}
           onCutComplete={completeCut}
           onCutStart={startCut}
           onCutFinish={startOpening}
-          onOpeningPreviewComplete={resetOpening}
+          onFlipCard={flipTopCard}
+          onOpenAnother={resetOpening}
+          onOpeningAnimationComplete={beginReveal}
         />
         <Credits />
       </S.ContentWrapper>
