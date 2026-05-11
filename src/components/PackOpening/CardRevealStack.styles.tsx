@@ -159,7 +159,7 @@ export const CounterLabel = styled(Text)`
   color: rgba(255, 255, 255, 0.78);
 `
 
-export const CounterValue = styled(Text)`
+export const CounterValue = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -169,9 +169,10 @@ export const CounterValue = styled(Text)`
   font-variant-numeric: tabular-nums;
 `
 
-export const CounterDivider = styled(Box)`
+export const CounterDivider = styled.span`
   width: 12px;
   height: 1px;
+  display: inline-block;
   background: rgba(255, 255, 255, 0.28);
 `
 
