@@ -10,16 +10,22 @@ const cardSideStyles = css`
 `
 
 export const CardContainer = styled(Flex, {
-  shouldForwardProp: prop => prop !== 'shouldCardBeFlipped'
-})<{ shouldCardBeFlipped?: boolean }>`
+  shouldForwardProp: (prop) =>
+    prop !== 'shouldCardBeFlipped' && prop !== '$isClickable',
+})<{ $isClickable?: boolean; shouldCardBeFlipped?: boolean }>`
   margin: 0 auto;
   position: relative;
   transform-style: preserve-3d;
   transition: all 1s ease;
   width: 288px;
   height: 400px;
+  cursor: ${({ $isClickable }) => ($isClickable ? 'pointer' : 'default')};
   transform: ${({ shouldCardBeFlipped }) =>
     shouldCardBeFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'};
+
+  &:focus-visible {
+    outline: none;
+  }
 `
 
 export const CardBack = styled(Flex)`
@@ -32,6 +38,7 @@ export const CardFront = styled(Flex)`
 `
 
 export const CardImage = styled(Image)`
-  max-height: 400px;
+  width: 100%;
+  height: 100%;
   border-radius: 15px;
 `

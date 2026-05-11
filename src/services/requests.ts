@@ -4,7 +4,7 @@ import { BuildQueryParams, buildQueryParams } from '@/utils/buildQueryParams'
 import {
   COMMONS_PER_PACK,
   RARES_PER_PACK,
-  UNCOMMONS_PER_PACK
+  UNCOMMONS_PER_PACK,
 } from '@/utils/constants'
 
 export const getBoosterPacks = (params?: BuildQueryParams) =>
@@ -13,42 +13,48 @@ export const getBoosterPacks = (params?: BuildQueryParams) =>
 export const getCards = (params?: BuildQueryParams) =>
   client.get(buildQueryParams('cards', params))
 
-const CARD_SELECT_FIELDS = 'id,images,rarity,supertype,subtypes'
+const CARD_SELECT_FIELDS = 'id,name,images,rarity,supertype,subtypes'
+const MAX_CARD_PAGE_SIZE = 250
 
-const RARE_RARITY_QUERY =
-  '(rarity:"Rare" OR rarity:"Rare Holo" OR rarity:"Rare Holo EX" OR rarity:"Rare Holo GX" OR rarity:"Rare Holo V" OR rarity:"Rare Holo VMAX" OR rarity:"Rare Holo VSTAR" OR rarity:"Rare Ultra" OR rarity:"Rare Secret" OR rarity:"Rare Rainbow" OR rarity:"Rare Shiny" OR rarity:"Hyper Rare" OR rarity:"Illustration Rare" OR rarity:"Special Illustration Rare" OR rarity:"Amazing Rare" OR rarity:"Radiant Rare" OR rarity:"Trainer Gallery Rare Holo")'
-
-const pickRandom = <T>(arr: T[], n: number): T[] => {
-  const copy = [...arr]
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[copy[i], copy[j]] = [copy[j], copy[i]]
-  }
-  return copy.slice(0, n)
+interface CardsSearchResponse {
+  count?: number
+  data?: Card[]
+  page?: number
+  pageSize?: number
+  totalCount?: number
 }
 
-export const fetchPackCards = async (setId: string): Promise<Card[]> => {
-  const [commonsRes, uncommonsRes, raresRes] = await Promise.all([
-    getCards({
-      q: `set.id:${setId} rarity:Common`,
-      pageSize: 40,
-      select: CARD_SELECT_FIELDS
-    }),
-    getCards({
-      q: `set.id:${setId} rarity:Uncommon`,
-      pageSize: 25,
-      select: CARD_SELECT_FIELDS
-    }),
-    getCards({
-      q: `set.id:${setId} ${RARE_RARITY_QUERY}`,
-      pageSize: 20,
-      select: CARD_SELECT_FIELDS
-    })
-  ])
+export const fetchSetCards = async (
+  setId: string,
+  totalCardsInSet: number,
+): Promise<Card[]> => {
+  const requiredMinimumCards =
+    COMMONS_PER_PACK + UNCOMMONS_PER_PACK + RARES_PER_PACK
+  const targetCardsCount = Math.max(totalCardsInSet, requiredMinimumCards)
+  const allCards: Card[] = []
+  let page = 1
+  let totalCount = targetCardsCount
 
-  const commons = pickRandom<Card>(commonsRes.data ?? [], COMMONS_PER_PACK)
-  const uncommons = pickRandom<Card>(uncommonsRes.data ?? [], UNCOMMONS_PER_PACK)
-  const rares = pickRandom<Card>(raresRes.data ?? [], RARES_PER_PACK)
+  while (allCards.length < totalCount) {
+    const cardsResponse = (await getCards({
+      q: `set.id:${setId}`,
+      page,
+      pageSize: MAX_CARD_PAGE_SIZE,
+      select: CARD_SELECT_FIELDS,
+    })) as CardsSearchResponse
 
-  return [...commons, ...uncommons, ...rares]
+    const pageCards = cardsResponse.data ?? []
+    const responseTotalCount = cardsResponse.totalCount ?? targetCardsCount
+
+    allCards.push(...pageCards)
+    totalCount = responseTotalCount
+
+    if (pageCards.length === 0 || pageCards.length < MAX_CARD_PAGE_SIZE) {
+      break
+    }
+
+    page += 1
+  }
+
+  return allCards
 }

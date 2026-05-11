@@ -7,18 +7,18 @@ import { usePackArt } from '@/hooks/usePackArt'
 import { PackOpeningPhase } from '@/hooks/usePackOpeningState'
 
 import * as S from './PackIdle.styles'
+import PackVisual from './PackVisual'
 
 interface PackCuttingProps {
+  canOpenPack: boolean
+  hasLoadError: boolean
   phase: PackOpeningPhase
+  packHintText: string
   onCutCancel: () => void
   onCutComplete: () => void
   onCutFinish: () => void
+  onRetryLoadSet: () => void
   onCutStart: () => void
-}
-
-interface PackVisualProps {
-  logoSrc: string
-  packArt: string | null
 }
 
 const MINIMUM_CUT_PROGRESS = 0.6
@@ -27,22 +27,15 @@ const MINIMUM_CUT_PROGRESS_CSS = 0.06
 const CUT_FINISH_DURATION_SECONDS = 0.22
 const CUT_RETURN_DURATION_SECONDS = 0.18
 
-const PackVisual: FC<PackVisualProps> = ({ logoSrc, packArt }) =>
-  packArt ? (
-    <S.PackImage src={packArt} alt="Booster pack" draggable={false} />
-  ) : (
-    <S.PackFallback>
-      <S.PackTopStrip />
-      <S.PackLogo src={logoSrc} alt="" draggable={false} />
-      <S.PackBottomStrip />
-    </S.PackFallback>
-  )
-
 const PackCutting: FC<PackCuttingProps> = ({
+  canOpenPack,
+  hasLoadError,
   phase,
+  packHintText,
   onCutCancel,
   onCutComplete,
   onCutFinish,
+  onRetryLoadSet,
   onCutStart,
 }) => {
   const { selectedPack } = useContext(SelectedPackContext)
@@ -79,6 +72,8 @@ const PackCutting: FC<PackCuttingProps> = ({
   }
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (!canOpenPack) return
+
     isPointerActiveRef.current = true
     trackerBoundsRef.current =
       trackerRef.current?.getBoundingClientRect() ?? null
@@ -127,8 +122,9 @@ const PackCutting: FC<PackCuttingProps> = ({
 
   const isCutting = phase === 'cutting' || phase === 'finishing'
   const isIdle = phase === 'idle'
-  const isInteractive = phase === 'cutting' || isIdle
+  const isInteractive = canOpenPack && (phase === 'cutting' || isIdle)
   const isDetached = phase === 'finishing'
+  const shouldShowSwipeGuide = isIdle && canOpenPack && !hasLoadError
 
   return (
     <S.IdleContainer>
@@ -139,7 +135,11 @@ const PackCutting: FC<PackCuttingProps> = ({
             height: '100%',
           }}
         >
-          <S.PackCard ref={packRef} $isCutting={isCutting}>
+          <S.PackCard
+            ref={packRef}
+            $isCutting={isCutting}
+            $isInteractive={canOpenPack}
+          >
             {!isDetached && <PackVisual logoSrc={logoSrc} packArt={packArt} />}
             {isDetached && (
               <>
@@ -168,6 +168,26 @@ const PackCutting: FC<PackCuttingProps> = ({
                 </motion.div>
               </>
             )}
+            {shouldShowSwipeGuide && (
+              <S.SwipeGuideRail>
+                <motion.div
+                  animate={{ x: ['-42%', '108%'] }}
+                  transition={{
+                    duration: 2.5,
+                    ease: 'easeInOut',
+                    repeat: Number.POSITIVE_INFINITY,
+                    repeatDelay: 0.1,
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    willChange: 'transform',
+                  }}
+                >
+                  <S.SwipeGuideHighlight />
+                </motion.div>
+              </S.SwipeGuideRail>
+            )}
             {phase === 'cutting' && (
               <motion.div
                 style={{
@@ -193,7 +213,18 @@ const PackCutting: FC<PackCuttingProps> = ({
           </S.PackCard>
         </motion.div>
       </S.PackWrapper>
-      <S.SwipeHint $isHidden={!isIdle}>Swipe the top to open</S.SwipeHint>
+      {hasLoadError ? (
+        <S.ErrorActions>
+          <S.SwipeHintError $isHidden={!isIdle}>
+            {packHintText}
+          </S.SwipeHintError>
+          {isIdle && (
+            <S.RetryButton onClick={onRetryLoadSet}>Retry</S.RetryButton>
+          )}
+        </S.ErrorActions>
+      ) : (
+        <S.SwipeHint $isHidden={!isIdle}>{packHintText}</S.SwipeHint>
+      )}
     </S.IdleContainer>
   )
 }
