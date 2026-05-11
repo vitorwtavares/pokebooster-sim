@@ -1,5 +1,6 @@
 import { FC, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { FastForward } from 'lucide-react'
 
 import { Card } from '@/components'
 import { Card as CardType } from '@/types/api'
@@ -15,6 +16,7 @@ interface CardRevealStackProps {
   onAdvanceCard: () => void
   onFlipCard: () => void
   onOpenAnother: () => void
+  onSkipReveal: () => void
 }
 
 const CardRevealStack: FC<CardRevealStackProps> = ({
@@ -26,6 +28,7 @@ const CardRevealStack: FC<CardRevealStackProps> = ({
   onAdvanceCard,
   onFlipCard,
   onOpenAnother,
+  onSkipReveal,
 }) => {
   const currentCard = cards[revealedIndex]
   const [detailsCard, setDetailsCard] = useState(currentCard)
@@ -134,14 +137,23 @@ const CardRevealStack: FC<CardRevealStackProps> = ({
         </S.StackShell>
       </S.RevealStage>
       <S.BottomRow>
-        <S.CounterPill>
-          <S.CounterLabel>Card</S.CounterLabel>
-          <S.CounterValue>
-            {Math.min(revealedIndex + 1, cards.length)}
-            <S.CounterDivider />
-            {cards.length}
-          </S.CounterValue>
-        </S.CounterPill>
+        <S.CounterRow>
+          <S.CounterPill>
+            <S.CounterLabel>Card</S.CounterLabel>
+            <S.CounterValue>
+              {Math.min(revealedIndex + 1, cards.length)}
+              <S.CounterDivider />
+              {cards.length}
+            </S.CounterValue>
+          </S.CounterPill>
+          <S.SkipButton
+            aria-label="Skip to pack summary"
+            onClick={onSkipReveal}
+            title="Skip to summary"
+          >
+            <FastForward strokeWidth={2.1} />
+          </S.SkipButton>
+        </S.CounterRow>
         <S.StatusText>
           {isTopCardFlipped
             ? 'Tap the card to continue'

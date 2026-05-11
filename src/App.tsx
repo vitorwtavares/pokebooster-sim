@@ -20,6 +20,7 @@ const App = () => {
     beginReveal,
     flipTopCard,
     advanceCard,
+    skipReveal,
     resetOpening,
   } = usePackOpeningState()
 
@@ -44,6 +45,7 @@ const App = () => {
           onFlipCard={flipTopCard}
           onOpenAnother={resetOpening}
           onOpeningAnimationComplete={beginReveal}
+          onSkipReveal={skipReveal}
         />
         <Credits />
       </S.ContentWrapper>
