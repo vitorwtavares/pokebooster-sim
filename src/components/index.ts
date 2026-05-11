@@ -1,5 +1,5 @@
+export * from './Backdrop'
 export * from './Card'
 export * from './CardPack'
-export * from './Header'
-export * from './PackSelectorList'
+export * from './PackOpening'
 export * from './Credits'

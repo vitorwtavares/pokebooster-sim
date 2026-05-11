@@ -3,7 +3,7 @@ import {
   CloseButton,
   useDisclosure,
   Link,
-  List
+  List,
 } from '@chakra-ui/react'
 
 import * as S from './Credits.styles'
@@ -17,7 +17,7 @@ const Credits = () => {
         Credits
       </S.CreditsButton>
 
-      <Dialog.Root open={open} onOpenChange={e => !e.open && onClose()}>
+      <Dialog.Root open={open} onOpenChange={(e) => !e.open && onClose()}>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
@@ -34,11 +34,11 @@ const Credits = () => {
                   </Link>
                 </List.Item>
                 <List.Item>
-                  This website is not produced, endorsed, supported, or affiliated
-                  with Nintendo or The Pokémon Company.
+                  This website is not produced, endorsed, supported, or
+                  affiliated with Nintendo or The Pokémon Company.
                 </List.Item>
               </List.Root>
-              Copyright © 2023{' '}
+              Copyright © 2026{' '}
               <Link href="https://github.com/vitorwtavares" target="_blank">
                 Vítor Tavares
               </Link>

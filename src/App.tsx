@@ -1,53 +1,50 @@
-import { useState, useContext } from 'react'
+import { useContext, useEffect } from 'react'
 
-import { CardPack, Header, Credits } from '@/components'
-
-import { getCards } from '@/services/requests'
+import { Backdrop, Credits, PackOpening } from '@/components'
 import { SelectedPackContext } from '@/context/SelectedPack'
-
-import { CARDS_PER_PACK } from '@/utils/constants'
-import { getRandomCardIds } from '@/utils/getRandomCardIds'
+import { usePackOpeningState } from '@/hooks/usePackOpeningState'
 
 import * as S from '@/App.styles'
 
 const App = () => {
   const { selectedPack } = useContext(SelectedPackContext)
+  const {
+    phase,
+    openingRun,
+    revealedIndex,
+    isTopCardFlipped,
+    startCut,
+    cancelCut,
+    completeCut,
+    startOpening,
+    beginReveal,
+    flipTopCard,
+    advanceCard,
+    resetOpening,
+  } = usePackOpeningState()
 
-  const [cards, setCards] = useState(Array(CARDS_PER_PACK).fill(undefined))
-  const [isCardFlipped, setIsCardFlipped] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleClick = async () => {
-    if (isCardFlipped) setIsCardFlipped(false)
-
-    try {
-      setIsLoading(true)
-
-      const randomIds = getRandomCardIds(selectedPack.total, CARDS_PER_PACK)
-
-      const { data } = await getCards({
-        q: `set.id:${selectedPack.id} ${randomIds}`
-      })
-
-      setCards(data)
-      setTimeout(() => {
-        setIsCardFlipped(true)
-        setIsLoading(false)
-      }, 500)
-    } catch (err) {
-      console.log(err)
-      setIsLoading(false)
-    }
-  }
+  useEffect(() => {
+    resetOpening()
+  }, [resetOpening, selectedPack.id])
 
   return (
     <S.HeaderAndContentContainer>
-      <Header />
+      <Backdrop />
       <S.ContentWrapper>
-        <S.OpenPackButton onClick={handleClick} loading={isLoading}>
-          {isCardFlipped ? 'Open another pack' : 'Open pack'}
-        </S.OpenPackButton>
-        <CardPack cards={cards} isCardFlipped={isCardFlipped} />
+        <PackOpening
+          isTopCardFlipped={isTopCardFlipped}
+          openingRun={openingRun}
+          phase={phase}
+          revealedIndex={revealedIndex}
+          onAdvanceCard={advanceCard}
+          onCutCancel={cancelCut}
+          onCutComplete={completeCut}
+          onCutStart={startCut}
+          onCutFinish={startOpening}
+          onFlipCard={flipTopCard}
+          onOpenAnother={resetOpening}
+          onOpeningAnimationComplete={beginReveal}
+        />
         <Credits />
       </S.ContentWrapper>
     </S.HeaderAndContentContainer>

@@ -1,0 +1,159 @@
+import { FC, useContext, useEffect, useRef, useState } from 'react'
+
+import fallbackLogo from '@/assets/fallback-logo.png'
+import { SelectedPackContext } from '@/context/SelectedPack'
+import { usePackCardsQuery } from '@/hooks/usePackCardsQuery'
+import { usePackArt } from '@/hooks/usePackArt'
+import { PackOpeningPhase } from '@/hooks/usePackOpeningState'
+import { Card as CardType } from '@/types/api'
+import { buildPackFromSetCards } from '@/utils/buildPackFromSetCards'
+
+import CardRevealStack from './CardRevealStack'
+import PackCutting from './PackCutting'
+import PackTear from './PackTear'
+
+interface PackOpeningProps {
+  openingRun: number
+  isTopCardFlipped: boolean
+  phase: PackOpeningPhase
+  revealedIndex: number
+  onAdvanceCard: (cardsCount: number) => void
+  onCutCancel: () => void
+  onCutComplete: () => void
+  onCutFinish: () => void
+  onCutStart: () => void
+  onFlipCard: () => void
+  onOpenAnother: () => void
+  onOpeningAnimationComplete: () => void
+}
+
+const OPENING_PREVIEW_DURATION_MS = 700
+
+interface PackRequestState {
+  cards: CardType[]
+  errorMessage: string | null
+  isLoading: boolean
+}
+
+const PackOpening: FC<PackOpeningProps> = ({
+  openingRun,
+  isTopCardFlipped,
+  phase,
+  revealedIndex,
+  onAdvanceCard,
+  onCutCancel,
+  onCutComplete,
+  onCutFinish,
+  onCutStart,
+  onFlipCard,
+  onOpenAnother,
+  onOpeningAnimationComplete,
+}) => {
+  const { selectedPack } = useContext(SelectedPackContext)
+  const packArt = usePackArt(selectedPack.id)
+  const logoSrc = selectedPack.logoUrl ?? fallbackLogo
+  const {
+    data: selectedSetCards,
+    error: selectedSetCardsError,
+    isLoading: isSelectedSetLoading,
+    refetch: refetchSelectedSetCards,
+  } = usePackCardsQuery(selectedPack.id, selectedPack.total)
+  const latestPackBuildRunRef = useRef(0)
+  const [packRequestState, setPackRequestState] = useState<PackRequestState>({
+    cards: [],
+    errorMessage: null,
+    isLoading: false,
+  })
+  const isSelectedSetReady =
+    Boolean(selectedSetCards?.length) &&
+    !isSelectedSetLoading &&
+    !selectedSetCardsError
+  const hasSelectedSetLoadError = Boolean(selectedSetCardsError)
+  const packHintText = hasSelectedSetLoadError
+    ? 'Pack failed to load'
+    : isSelectedSetReady
+      ? 'Swipe the top to open'
+      : 'Pack is loading'
+
+  useEffect(() => {
+    if (phase !== 'opening') return
+
+    const resetOpeningTimeout = window.setTimeout(
+      onOpeningAnimationComplete,
+      OPENING_PREVIEW_DURATION_MS,
+    )
+
+    return () => window.clearTimeout(resetOpeningTimeout)
+  }, [onOpeningAnimationComplete, phase, openingRun])
+
+  useEffect(() => {
+    if (phase !== 'opening') return
+
+    const nextPackBuildRun = latestPackBuildRunRef.current + 1
+    latestPackBuildRunRef.current = nextPackBuildRun
+
+    const buildPack = async () => {
+      setPackRequestState({
+        cards: [],
+        errorMessage: null,
+        isLoading: true,
+      })
+
+      if (!selectedSetCards?.length) {
+        setPackRequestState({
+          cards: [],
+          errorMessage: 'The cards for this set are still loading.',
+          isLoading: false,
+        })
+        return
+      }
+
+      if (latestPackBuildRunRef.current !== nextPackBuildRun) return
+
+      setPackRequestState({
+        cards: buildPackFromSetCards(selectedPack.id, selectedSetCards),
+        errorMessage: null,
+        isLoading: false,
+      })
+    }
+
+    void buildPack()
+  }, [openingRun, phase, selectedPack.id, selectedSetCards])
+
+  if (phase === 'opening') {
+    return <PackTear logoSrc={logoSrc} packArt={packArt} />
+  }
+
+  if (phase === 'revealing') {
+    return (
+      <CardRevealStack
+        cards={packRequestState.cards}
+        errorMessage={packRequestState.errorMessage}
+        isLoading={packRequestState.isLoading}
+        isTopCardFlipped={isTopCardFlipped}
+        onAdvanceCard={() => onAdvanceCard(packRequestState.cards.length)}
+        onFlipCard={onFlipCard}
+        onOpenAnother={onOpenAnother}
+        revealedIndex={revealedIndex}
+      />
+    )
+  }
+
+  return (
+    <PackCutting
+      canOpenPack={isSelectedSetReady}
+      hasLoadError={hasSelectedSetLoadError}
+      phase={phase}
+      packHintText={packHintText}
+      onCutCancel={onCutCancel}
+      onCutComplete={onCutComplete}
+      onCutFinish={onCutFinish}
+      onRetryLoadSet={() => {
+        void refetchSelectedSetCards()
+      }}
+      onCutStart={onCutStart}
+    />
+  )
+}
+
+export default PackOpening

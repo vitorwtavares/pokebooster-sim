@@ -1,9 +1,4 @@
+html,
 body {
-  background-color: #222;
-}
-
-@media (min-width: 992px) {
-  body {
-    overflow-y: hidden;
-  }
+  overscroll-behavior: none;
 }

@@ -17,5 +17,9 @@ interface CardImages {
 
 export interface Card {
   id: string
+  name?: string
   images: CardImages
+  rarity?: string
+  supertype?: string
+  subtypes?: string[]
 }
