@@ -45,6 +45,10 @@ interface BuiltPack {
   isGodPack: boolean
 }
 
+interface BuildPackOptions {
+  forceGodPack?: boolean
+}
+
 const pickRandom = <T>(arr: T[], n: number): T[] => {
   const copy = [...arr]
   for (let i = copy.length - 1; i > 0; i--) {
@@ -74,6 +78,17 @@ const takeUniqueCards = (
   })
 
   return selectedCards
+}
+
+const takeCardsAllowingRepeats = (pool: Card[], count: number): Card[] => {
+  if (pool.length === 0) return []
+
+  const shuffledPool = pickRandom(pool, pool.length)
+
+  return Array.from(
+    { length: count },
+    (_, index) => shuffledPool[index % shuffledPool.length],
+  )
 }
 
 const isRareCard = (card: Card) => {
@@ -106,13 +121,24 @@ const isGodPackEligibleCard = (card: Card) => {
 export const buildPackFromSetCards = (
   setId: string,
   setCards: Card[],
+  options?: BuildPackOptions,
 ): BuiltPack => {
   const commonsPool = setCards.filter((card) => card.rarity === 'Common')
   const uncommonsPool = setCards.filter((card) => card.rarity === 'Uncommon')
   const raresPool = setCards.filter(isRareCard)
   const godPackPool = setCards.filter(isGodPackEligibleCard)
   const usedIds = new Set<string>()
+  const shouldForceGodPack = options?.forceGodPack === true
   const shouldRollGodPack = Math.random() < GOD_PACK_CHANCE
+
+  if (shouldForceGodPack) {
+    const forcedGodPackPool = godPackPool.length > 0 ? godPackPool : raresPool
+
+    return {
+      cards: takeCardsAllowingRepeats(forcedGodPackPool, CARDS_PER_PACK),
+      isGodPack: forcedGodPackPool.length > 0,
+    }
+  }
 
   if (shouldRollGodPack && raresPool.length > 0) {
     return {

@@ -63,6 +63,7 @@ const PackOpening: FC<PackOpeningProps> = ({
     refetch: refetchSelectedSetCards,
   } = usePackCardsQuery(selectedPack.id, selectedPack.total)
   const latestPackBuildRunRef = useRef(0)
+  const shouldForceNextGodPackRef = useRef(false)
   const [packRequestState, setPackRequestState] = useState<PackRequestState>({
     cards: [],
     errorMessage: null,
@@ -96,6 +97,7 @@ const PackOpening: FC<PackOpeningProps> = ({
 
     const nextPackBuildRun = latestPackBuildRunRef.current + 1
     latestPackBuildRunRef.current = nextPackBuildRun
+    const shouldForceGodPackForRun = shouldForceNextGodPackRef.current
 
     const buildPack = async () => {
       setPackRequestState({
@@ -117,7 +119,21 @@ const PackOpening: FC<PackOpeningProps> = ({
 
       if (latestPackBuildRunRef.current !== nextPackBuildRun) return
 
-      const nextPack = buildPackFromSetCards(selectedPack.id, selectedSetCards)
+      const nextPack = buildPackFromSetCards(
+        selectedPack.id,
+        selectedSetCards,
+        {
+          forceGodPack: shouldForceGodPackForRun,
+        },
+      )
+
+      if (shouldForceGodPackForRun) {
+        console.log('[god-pack-test]', {
+          rarities: nextPack.cards.map(
+            (card) => card.rarity ?? 'Unknown rarity',
+          ),
+        })
+      }
 
       setPackRequestState({
         cards: nextPack.cards,
@@ -125,6 +141,10 @@ const PackOpening: FC<PackOpeningProps> = ({
         isGodPack: nextPack.isGodPack,
         isLoading: false,
       })
+
+      if (shouldForceGodPackForRun) {
+        shouldForceNextGodPackRef.current = false
+      }
     }
 
     void buildPack()
@@ -171,6 +191,10 @@ const PackOpening: FC<PackOpeningProps> = ({
       onCutFinish={onCutFinish}
       onRetryLoadSet={() => {
         void refetchSelectedSetCards()
+      }}
+      onForceGodPack={() => {
+        shouldForceNextGodPackRef.current = true
+        onCutFinish()
       }}
       onCutStart={onCutStart}
     />

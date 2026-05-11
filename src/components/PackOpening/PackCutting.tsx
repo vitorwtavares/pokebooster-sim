@@ -1,6 +1,7 @@
 import { FC, PointerEvent, useContext, useEffect, useRef } from 'react'
 import { animate, motion, useMotionValue, useTransform } from 'framer-motion'
 
+import { SHOW_FORCE_GOD_PACK_BUTTON } from '@/feature-flags'
 import fallbackLogo from '@/assets/fallback-logo.png'
 import { SelectedPackContext } from '@/context/SelectedPack'
 import { usePackArt } from '@/hooks/usePackArt'
@@ -16,6 +17,7 @@ interface PackCuttingProps {
   packHintText: string
   onCutCancel: () => void
   onCutComplete: () => void
+  onForceGodPack: () => void
   onCutFinish: () => void
   onRetryLoadSet: () => void
   onCutStart: () => void
@@ -34,6 +36,7 @@ const PackCutting: FC<PackCuttingProps> = ({
   packHintText,
   onCutCancel,
   onCutComplete,
+  onForceGodPack,
   onCutFinish,
   onRetryLoadSet,
   onCutStart,
@@ -128,6 +131,25 @@ const PackCutting: FC<PackCuttingProps> = ({
 
   return (
     <S.IdleContainer>
+      {SHOW_FORCE_GOD_PACK_BUTTON ? (
+        <button
+          onClick={onForceGodPack}
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            zIndex: 6,
+            padding: '5px',
+            background: '#bb3311',
+            color: 'white',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+          type="button"
+        >
+          test god pack
+        </button>
+      ) : null}
       <S.PackWrapper>
         <motion.div
           style={{
