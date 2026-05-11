@@ -1,5 +1,5 @@
 import { Box, Button, Flex } from '@chakra-ui/react'
-import { keyframes } from '@emotion/react'
+import { css, keyframes } from '@emotion/react'
 import styled from '@emotion/styled'
 
 const float = keyframes`
@@ -28,7 +28,9 @@ export const IdleContainer = styled(Flex)`
 export const PackWrapper = styled(Box)`
   width: 288px;
   height: 480px;
-  animation: ${float} 3.5s ease-in-out infinite;
+  animation: ${css`
+    ${float} 3.5s ease-in-out infinite
+  `};
   filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 1));
 
   @media only screen and (max-width: 768px) {
@@ -96,7 +98,9 @@ export const PackFallback = styled(Box)`
   );
   background-size: 200% 200%;
   background-repeat: no-repeat;
-  animation: ${flow} 7s linear infinite;
+  animation: ${css`
+    ${flow} 7s linear infinite
+  `};
   box-shadow:
     inset 0 2px 6px rgba(255, 255, 255, 0.18),
     inset 0 -10px 24px rgba(0, 0, 0, 0.2);
@@ -169,7 +173,11 @@ export const SwipeHint = styled.div<{ $isHidden?: boolean }>`
   letter-spacing: 0.18em;
   text-transform: uppercase;
   animation: ${({ $isHidden }) =>
-    $isHidden ? 'none' : `${pulse} 2.2s ease-in-out infinite`};
+    $isHidden
+      ? 'none'
+      : css`
+          ${pulse} 2.2s ease-in-out infinite
+        `};
   opacity: ${({ $isHidden }) => ($isHidden ? 0 : 1)};
   pointer-events: none;
   transform: ${({ $isHidden }) =>
