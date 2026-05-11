@@ -8,7 +8,7 @@ const cardSideStyles = css`
   height: 100%;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  border-radius: 15px;
+  border-radius: 12px;
 `
 
 export const CardScene = styled(Flex)`
@@ -34,7 +34,7 @@ export const CardContainer = styled(Flex, {
   transform: ${({ shouldCardBeFlipped }) =>
     shouldCardBeFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'};
   will-change: transform;
-  border-radius: 15px;
+  border-radius: 12px;
 
   &:focus-visible {
     outline: none;
@@ -57,7 +57,7 @@ export const CardFront = styled(Flex)`
 export const CardImage = styled(Image)`
   width: 100%;
   height: 100%;
-  border-radius: 15px;
+  border-radius: 12px;
   user-select: none;
   pointer-events: none;
 `

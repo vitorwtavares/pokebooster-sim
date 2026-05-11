@@ -10,6 +10,7 @@ import { buildPackFromSetCards } from '@/utils/buildPackFromSetCards'
 
 import CardRevealStack from './CardRevealStack'
 import PackCutting from './PackCutting'
+import PackSummary from './PackSummary'
 import PackTear from './PackTear'
 
 interface PackOpeningProps {
@@ -25,6 +26,7 @@ interface PackOpeningProps {
   onFlipCard: () => void
   onOpenAnother: () => void
   onOpeningAnimationComplete: () => void
+  onSkipReveal: (cardsCount: number) => void
 }
 
 const OPENING_PREVIEW_DURATION_MS = 700
@@ -48,6 +50,7 @@ const PackOpening: FC<PackOpeningProps> = ({
   onFlipCard,
   onOpenAnother,
   onOpeningAnimationComplete,
+  onSkipReveal,
 }) => {
   const { selectedPack } = useContext(SelectedPackContext)
   const packArt = usePackArt(selectedPack.id)
@@ -135,6 +138,16 @@ const PackOpening: FC<PackOpeningProps> = ({
         onFlipCard={onFlipCard}
         onOpenAnother={onOpenAnother}
         revealedIndex={revealedIndex}
+        onSkipReveal={() => onSkipReveal(packRequestState.cards.length)}
+      />
+    )
+  }
+
+  if (phase === 'summary') {
+    return (
+      <PackSummary
+        cards={packRequestState.cards}
+        onOpenAnother={onOpenAnother}
       />
     )
   }

@@ -65,6 +65,40 @@ export const CounterPill = styled(Box)`
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 `
 
+export const CounterRow = styled(Flex)`
+  position: relative;
+  width: fit-content;
+  justify-content: center;
+  align-items: center;
+`
+
+export const SkipButton = styled(Button)`
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(10, 16, 28, 0.42);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(16, 23, 38, 0.58);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`
+
 export const StatusText = styled(Text)`
   text-align: center;
   color: rgba(255, 255, 255, 0.78);
