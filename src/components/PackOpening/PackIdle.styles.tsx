@@ -224,6 +224,44 @@ export const CutTracker = styled(Box, {
   pointer-events: auto;
 `
 
+export const SwipeGuideRail = styled(Box)`
+  position: absolute;
+  top: calc(14% - 2px);
+  left: 0;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(188, 196, 208, 0.18) 0%,
+    rgba(216, 223, 232, 0.48) 50%,
+    rgba(188, 196, 208, 0.18) 100%
+  );
+  box-shadow:
+    0 0 10px rgba(214, 220, 228, 0.18),
+    0 0 2px rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+`
+
+export const SwipeGuideHighlight = styled(Box)`
+  width: 34%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.42) 30%,
+    rgba(255, 255, 255, 0.95) 52%,
+    rgba(255, 255, 255, 0.42) 74%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  box-shadow:
+    0 0 12px rgba(255, 255, 255, 0.22),
+    0 0 3px rgba(255, 255, 255, 0.55);
+`
+
 export const CutLine = styled(Box, {
   shouldForwardProp: (prop) => prop !== '$isVisible',
 })<{ $isVisible: boolean }>`
@@ -235,8 +273,9 @@ export const CutLine = styled(Box, {
   border-radius: 999px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.95) 40%,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.98) 38%,
+    rgba(255, 146, 146, 0.98) 44%,
     rgba(255, 76, 76, 0.95) 100%
   );
   box-shadow:

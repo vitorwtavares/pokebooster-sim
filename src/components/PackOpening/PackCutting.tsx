@@ -124,6 +124,7 @@ const PackCutting: FC<PackCuttingProps> = ({
   const isIdle = phase === 'idle'
   const isInteractive = canOpenPack && (phase === 'cutting' || isIdle)
   const isDetached = phase === 'finishing'
+  const shouldShowSwipeGuide = isIdle && canOpenPack && !hasLoadError
 
   return (
     <S.IdleContainer>
@@ -166,6 +167,26 @@ const PackCutting: FC<PackCuttingProps> = ({
                   </S.PackCapSlice>
                 </motion.div>
               </>
+            )}
+            {shouldShowSwipeGuide && (
+              <S.SwipeGuideRail>
+                <motion.div
+                  animate={{ x: ['-42%', '108%'] }}
+                  transition={{
+                    duration: 2.5,
+                    ease: 'easeInOut',
+                    repeat: Number.POSITIVE_INFINITY,
+                    repeatDelay: 0.1,
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    willChange: 'transform',
+                  }}
+                >
+                  <S.SwipeGuideHighlight />
+                </motion.div>
+              </S.SwipeGuideRail>
             )}
             {phase === 'cutting' && (
               <motion.div
