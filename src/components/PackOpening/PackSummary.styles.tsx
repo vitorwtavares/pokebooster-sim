@@ -1,11 +1,25 @@
 import { Button, Flex, Image, SimpleGrid, Text } from '@chakra-ui/react'
 import styled from '@emotion/styled'
+import { motion } from 'framer-motion'
 
 export const SummaryContainer = styled(Flex)`
   width: min(1040px, calc(100vw - 32px));
+  flex: 1;
+  min-height: 0;
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  justify-content: center;
+
+  @media only screen and (min-width: 961px) and (min-height: 780px) {
+    gap: 48px;
+  }
+`
+
+export const SummaryHeader = styled(Flex)`
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 `
 
 export const SummaryHeading = styled(Text)`
@@ -24,6 +38,7 @@ export const SummarySubheading = styled(Text)`
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 14px;
+  font-weight: 600;
 `
 
 export const SummaryGrid = styled(SimpleGrid)`
@@ -50,10 +65,29 @@ export const SummaryGrid = styled(SimpleGrid)`
   }
 `
 
-export const PullCard = styled(Flex)`
-  flex-direction: column;
-  gap: 10px;
+export const PullCardButton = styled.button`
+  display: block;
   padding: 0;
+  border: none;
+  background: transparent;
+  cursor: zoom-in;
+  border-radius: 16px;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 255, 0.94),
+      0 0 26px rgba(255, 255, 255, 0.2);
+  }
+`
+
+export const PullCardMotion = styled(motion.div)`
+  width: 100%;
 `
 
 export const PullImage = styled(Image)`
@@ -63,6 +97,60 @@ export const PullImage = styled(Image)`
   object-fit: cover;
   border-radius: 16px;
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
+`
+
+export const InspectorOverlay = styled(motion.div)`
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5, 7, 12, 0.58);
+  backdrop-filter: blur(8px);
+`
+
+export const InspectorViewport = styled(motion.div)`
+  width: min(78vw, 520px, calc((100dvh - 140px) * 18 / 25));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 54px;
+
+  @media only screen and (max-height: 799px) {
+    gap: 34px;
+  }
+`
+
+export const InspectorHint = styled(Text)`
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+`
+
+export const InspectorCardMotion = styled(motion.button)`
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: zoom-out;
+
+  &:focus-visible {
+    outline: none;
+  }
+`
+
+export const InspectorImage = styled(Image)`
+  width: 100%;
+  height: auto;
+  aspect-ratio: 18 / 25;
+  object-fit: cover;
+  border-radius: 22px;
+  box-shadow:
+    0 36px 64px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
 `
 
 export const SummaryFooter = styled(Flex)`
