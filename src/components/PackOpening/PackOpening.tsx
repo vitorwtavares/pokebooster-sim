@@ -6,6 +6,7 @@ import { usePackCardsQuery } from '@/hooks/usePackCardsQuery'
 import { usePackArt } from '@/hooks/usePackArt'
 import { PackOpeningPhase } from '@/hooks/usePackOpeningState'
 import { Card as CardType } from '@/types/api'
+import { buildPackFromSetCards } from '@/utils/buildPackFromSetCards'
 
 import CardRevealStack from './CardRevealStack'
 import PackCutting from './PackCutting'
@@ -51,8 +52,11 @@ const PackOpening: FC<PackOpeningProps> = ({
   const { selectedPack } = useContext(SelectedPackContext)
   const packArt = usePackArt(selectedPack.id)
   const logoSrc = selectedPack.logoUrl ?? fallbackLogo
-  const { refetch } = usePackCardsQuery(selectedPack.id, selectedPack.total)
-  const latestRequestIdRef = useRef(0)
+  const { data: selectedSetCards } = usePackCardsQuery(
+    selectedPack.id,
+    selectedPack.total,
+  )
+  const latestPackBuildRunRef = useRef(0)
   const [packRequestState, setPackRequestState] = useState<PackRequestState>({
     cards: [],
     errorMessage: null,
@@ -73,38 +77,36 @@ const PackOpening: FC<PackOpeningProps> = ({
   useEffect(() => {
     if (phase !== 'opening') return
 
-    const requestId = latestRequestIdRef.current + 1
-    latestRequestIdRef.current = requestId
+    const nextPackBuildRun = latestPackBuildRunRef.current + 1
+    latestPackBuildRunRef.current = nextPackBuildRun
 
-    const loadPackCards = async () => {
+    const buildPack = async () => {
       setPackRequestState({
         cards: [],
         errorMessage: null,
         isLoading: true,
       })
 
-      const result = await refetch()
-
-      if (latestRequestIdRef.current !== requestId) return
-
-      if (result.error) {
+      if (!selectedSetCards?.length) {
         setPackRequestState({
           cards: [],
-          errorMessage: 'The cards could not be loaded for this pack.',
+          errorMessage: 'The cards for this set are still loading.',
           isLoading: false,
         })
         return
       }
 
+      if (latestPackBuildRunRef.current !== nextPackBuildRun) return
+
       setPackRequestState({
-        cards: result.data ?? [],
+        cards: buildPackFromSetCards(selectedPack.id, selectedSetCards),
         errorMessage: null,
         isLoading: false,
       })
     }
 
-    void loadPackCards()
-  }, [openingRun, refetch, phase])
+    void buildPack()
+  }, [openingRun, phase, selectedPack.id, selectedSetCards])
 
   if (phase === 'opening') {
     return <PackTear logoSrc={logoSrc} packArt={packArt} />
