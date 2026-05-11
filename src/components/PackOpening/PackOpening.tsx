@@ -10,6 +10,7 @@ import { buildPackFromSetCards } from '@/utils/buildPackFromSetCards'
 
 import CardRevealStack from './CardRevealStack'
 import PackCutting from './PackCutting'
+import PackSummary from './PackSummary'
 import PackTear from './PackTear'
 
 interface PackOpeningProps {
@@ -135,6 +136,15 @@ const PackOpening: FC<PackOpeningProps> = ({
         onFlipCard={onFlipCard}
         onOpenAnother={onOpenAnother}
         revealedIndex={revealedIndex}
+      />
+    )
+  }
+
+  if (phase === 'summary') {
+    return (
+      <PackSummary
+        cards={packRequestState.cards}
+        onOpenAnother={onOpenAnother}
       />
     )
   }
