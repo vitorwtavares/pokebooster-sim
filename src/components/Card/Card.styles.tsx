@@ -7,24 +7,41 @@ const cardSideStyles = css`
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 15px;
+`
+
+export const CardScene = styled(Flex)`
+  width: 288px;
+  height: 400px;
+  margin: 0 auto;
+  perspective: 1800px;
+  perspective-origin: 50% 48%;
+  transform-style: preserve-3d;
 `
 
 export const CardContainer = styled(Flex, {
   shouldForwardProp: (prop) =>
     prop !== 'shouldCardBeFlipped' && prop !== '$isClickable',
 })<{ $isClickable?: boolean; shouldCardBeFlipped?: boolean }>`
-  margin: 0 auto;
+  width: 100%;
+  height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: all 1s ease;
-  width: 288px;
-  height: 400px;
+  transform-origin: center center;
+  transition: transform 0.82s cubic-bezier(0.22, 0.8, 0.2, 1);
   cursor: ${({ $isClickable }) => ($isClickable ? 'pointer' : 'default')};
   transform: ${({ shouldCardBeFlipped }) =>
     shouldCardBeFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'};
+  will-change: transform;
+  border-radius: 15px;
 
   &:focus-visible {
     outline: none;
+    box-shadow:
+      0 20px 36px rgba(0, 0, 0, 0.24),
+      0 0 30px rgba(255, 255, 255, 0.28),
+      0 0 68px rgba(255, 255, 255, 0.2);
   }
 `
 
@@ -41,4 +58,6 @@ export const CardImage = styled(Image)`
   width: 100%;
   height: 100%;
   border-radius: 15px;
+  user-select: none;
+  pointer-events: none;
 `
