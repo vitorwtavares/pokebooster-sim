@@ -137,12 +137,12 @@ const PackCutting: FC<PackCuttingProps> = ({
           style={{
             position: 'absolute',
             top: 0,
-            right: 0,
+            left: 0,
             zIndex: 6,
-            padding: '5px',
-            background: '#bb3311',
-            color: 'white',
-            fontWeight: 600,
+            padding: '30px',
+            background: '#00ff11',
+            color: '#222',
+            fontWeight: 800,
             cursor: 'pointer',
           }}
           type="button"

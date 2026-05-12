@@ -2,7 +2,7 @@ import { FC, useContext, useEffect, useRef, useState } from 'react'
 
 import fallbackLogo from '@/assets/fallback-logo.png'
 import { SelectedPackContext } from '@/context/SelectedPack'
-import { usePackCardsQuery } from '@/hooks/usePackCardsQuery'
+import { usePackCardsQuery } from '@/hooks/api/usePackCardsQuery'
 import { usePackArt } from '@/hooks/usePackArt'
 import { PackOpeningPhase } from '@/hooks/usePackOpeningState'
 import { Card as CardType } from '@/types/api'

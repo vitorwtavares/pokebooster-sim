@@ -129,7 +129,7 @@ export const ActiveCardDetails = styled(Flex, {
 `
 
 export const CardName = styled(Text)`
-  font-size: 38px;
+  font-size: 34px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.96);
   text-align: center;
@@ -207,12 +207,16 @@ export const LoadingSpinner = styled(Spinner)`
 
 export const ActionButton = styled(Button)`
   min-width: 180px;
-  height: 36px;
+  height: 48px;
+  padding: 0 24px;
   border-radius: 999px;
   background-color: rgb(255, 255, 255);
   color: rgba(18, 24, 38, 0.96);
   border: none;
+  font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.85),
     0 0 12px rgba(255, 255, 255, 0),
