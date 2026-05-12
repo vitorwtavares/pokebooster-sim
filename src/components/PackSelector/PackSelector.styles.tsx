@@ -39,9 +39,13 @@ export const SelectorPanel = styled(Flex)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 18px;
+  gap: 28px;
   overflow: hidden;
   pointer-events: auto;
+
+  @media only screen and (max-width: 1024px) {
+    gap: 20px;
+  }
 
   @media only screen and (max-width: 768px) {
     width: min(100vw - 20px, 1800px);
@@ -53,8 +57,15 @@ export const SelectorPanel = styled(Flex)`
 export const SelectorHeader = styled(Flex)`
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 20px;
+  width: 100%;
   max-width: 660px;
+`
+
+export const SelectorTextGroup = styled(Flex)`
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 `
 
 export const SelectorEyebrow = styled(Text)`
@@ -78,7 +89,30 @@ export const SelectorDescription = styled(Text)`
   font-size: clamp(13px, 1.5vw, 15px);
   line-height: 1.5;
   text-align: center;
-  max-width: 520px;
+  max-width: 550px;
+`
+
+export const SearchInput = styled('input')`
+  width: min(280px, 100%);
+  height: 40px;
+  padding: 0 14px;
+  background: rgb(255, 255, 255);
+  color: rgba(18, 24, 38, 0.92);
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s ease;
+
+  &::placeholder {
+    color: rgba(18, 24, 38, 0.35);
+  }
+
+  &:focus {
+    border-color: rgb(255, 255, 255);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18);
+  }
 `
 
 export const SelectorViewport = styled(Flex)`

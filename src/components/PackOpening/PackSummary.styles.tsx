@@ -188,7 +188,7 @@ export const InspectorImage = styled(Image)`
   display: block;
   width: auto;
   max-width: 100%;
-  max-height: calc(100dvh - 140px);
+  max-height: calc(100dvh - 170px);
   height: auto;
   border-radius: 22px;
   box-shadow: 0 36px 64px rgba(0, 0, 0, 0.38);

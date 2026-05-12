@@ -7,6 +7,7 @@ import 'slick-carousel/slick/slick.css'
 import { SelectedPackContext } from '@/context/SelectedPack'
 import { useBoosterPacksQuery } from '@/hooks/api/useBoosterPacksQuery'
 import { Pack } from '@/types/api'
+import { debounce } from '@/utils/debounce'
 
 import * as S from './PackSelector.styles'
 
@@ -34,19 +35,31 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
     isLoading: isBoosterPacksLoading,
   } = useBoosterPacksQuery()
 
+  const [searchInput, setSearchInput] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const debouncedSetQuery = useMemo(
+    () => debounce((value: string) => setSearchQuery(value), 600),
+    [],
+  )
+
+  const filteredPacks = useMemo(() => {
+    if (!searchQuery.trim()) return boosterPacks
+    const q = searchQuery.toLowerCase()
+    return boosterPacks.filter((pack) => pack.name.toLowerCase().includes(q))
+  }, [boosterPacks, searchQuery])
+
   const selectedPackIndex = useMemo(() => {
-    if (boosterPacks.length === 0) return -1
-    const index = boosterPacks.findIndex((pack) => pack.id === selectedPack.id)
+    if (filteredPacks.length === 0) return -1
+    const index = filteredPacks.findIndex((pack) => pack.id === selectedPack.id)
     return index >= 0 ? index : 0
-  }, [boosterPacks, selectedPack.id])
+  }, [filteredPacks, selectedPack.id])
 
   const [activeIndex, setActiveIndex] = useState(0)
   const userNavigatedRef = useRef(false)
 
   const [slidesToShow, setSlidesToShow] = useState(() =>
-    typeof window === 'undefined'
-      ? 5
-      : computeSlidesToShow(window.innerWidth),
+    typeof window === 'undefined' ? 5 : computeSlidesToShow(window.innerWidth),
   )
 
   useEffect(() => {
@@ -63,6 +76,8 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
   useEffect(() => {
     if (!isOpen) {
       userNavigatedRef.current = false
+      setSearchInput('')
+      setSearchQuery('')
       return
     }
     if (selectedPackIndex >= 0) {
@@ -70,10 +85,22 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
     }
   }, [isOpen, selectedPackIndex])
 
+  // When search results change, jump back to slide 0
+  useEffect(() => {
+    setActiveIndex(0)
+    userNavigatedRef.current = false
+    sliderRef.current?.slickGoTo(0, true)
+  }, [searchQuery])
+
   const activePack =
-    boosterPacks.length > 0 && activeIndex >= 0
-      ? (boosterPacks[activeIndex] ?? null)
+    filteredPacks.length > 0 && activeIndex >= 0
+      ? (filteredPacks[activeIndex] ?? null)
       : null
+
+  const activePackRef = useRef(activePack)
+  useEffect(() => {
+    activePackRef.current = activePack
+  }, [activePack])
 
   useEffect(() => {
     if (!isOpen) return
@@ -82,6 +109,13 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
       if (event.key === 'Escape') {
         triggerButtonRef.current?.blur()
         onToggle()
+      } else if (event.key === 'ArrowLeft') {
+        sliderRef.current?.slickPrev()
+      } else if (event.key === 'ArrowRight') {
+        sliderRef.current?.slickNext()
+      } else if (event.key === 'Enter' && activePackRef.current) {
+        event.preventDefault()
+        handleSelectPack(activePackRef.current)
       }
     }
 
@@ -99,19 +133,21 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
   }
 
   const sliderSettings: Settings = {
+    accessibility: false,
     arrows: false,
     centerMode: true,
     centerPadding: '0px',
     dots: false,
-    infinite: true,
+    infinite: filteredPacks.length > slidesToShow,
     initialSlide: Math.max(
       userNavigatedRef.current ? activeIndex : selectedPackIndex,
       0,
     ),
     slidesToScroll: 1,
     slidesToShow,
-    speed: 320,
+    speed: 180,
     swipeToSlide: true,
+    waitForAnimate: false,
     afterChange: (current: number) => {
       setActiveIndex(current)
       userNavigatedRef.current = true
@@ -119,8 +155,8 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
   }
 
   const selectionPositionLabel =
-    boosterPacks.length > 0 && activeIndex >= 0
-      ? `${activeIndex + 1} / ${boosterPacks.length}`
+    filteredPacks.length > 0 && activeIndex >= 0
+      ? `${activeIndex + 1} / ${filteredPacks.length}`
       : null
 
   return (
@@ -143,12 +179,21 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
       {isOpen ? (
         <S.SelectorPanel>
           <S.SelectorHeader>
-            <S.SelectorEyebrow>Pack selector</S.SelectorEyebrow>
-            <S.SelectorTitle>Choose a set to open</S.SelectorTitle>
-            <S.SelectorDescription>
-              Navigate through the available booster sets, select the one you
-              want and jump back into ripping packs
-            </S.SelectorDescription>
+            <S.SelectorTextGroup>
+              <S.SelectorTitle>Choose a set to open</S.SelectorTitle>
+              <S.SelectorDescription>
+                Navigate through the available booster sets and select the one
+                you want to open
+              </S.SelectorDescription>
+            </S.SelectorTextGroup>
+            <S.SearchInput
+              placeholder="Search sets..."
+              value={searchInput}
+              onChange={(e) => {
+                setSearchInput(e.target.value)
+                debouncedSetQuery(e.target.value)
+              }}
+            />
           </S.SelectorHeader>
           {isBoosterPacksLoading ? (
             <S.SelectorState>
@@ -165,69 +210,79 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
                 Close this view and try again in a moment.
               </S.SelectorStateCopy>
             </S.SelectorState>
-          ) : activePack ? (
+          ) : (
             <>
               <S.SelectorViewport>
-                <S.SliderShell>
-                  <Slider
-                    key={slidesToShow}
-                    ref={sliderRef}
-                    {...sliderSettings}
-                  >
-                    {boosterPacks.map((pack) => (
-                      <div key={pack.id}>
-                        <S.SetCard>
-                          <S.SetCardChrome />
-                          <S.SetCardBody>
-                            <S.SetSeriesLabel>Booster set</S.SetSeriesLabel>
-                            <S.SetLogo
-                              alt={pack.name}
-                              draggable={false}
-                              loading="lazy"
-                              src={pack.images.logo}
-                            />
-                            <S.SetMeta>
-                              <S.SetName>{pack.name}</S.SetName>
-                              <S.SetStat>
-                                <S.SetStatLabel>Total cards</S.SetStatLabel>
-                                <S.SetStatValue>{pack.total}</S.SetStatValue>
-                              </S.SetStat>
-                            </S.SetMeta>
-                          </S.SetCardBody>
-                        </S.SetCard>
-                      </div>
-                    ))}
-                  </Slider>
-                  <S.PrevArrow
-                    aria-label="View previous set"
-                    onClick={() => sliderRef.current?.slickPrev()}
-                  >
-                    <ChevronLeft size={18} strokeWidth={2.4} />
-                  </S.PrevArrow>
-                  <S.NextArrow
-                    aria-label="View next set"
-                    onClick={() => sliderRef.current?.slickNext()}
-                  >
-                    <ChevronRight size={18} strokeWidth={2.4} />
-                  </S.NextArrow>
-                </S.SliderShell>
+                {activePack ? (
+                  <S.SliderShell>
+                    <Slider
+                      key={`${slidesToShow}-${searchQuery}`}
+                      ref={sliderRef}
+                      {...sliderSettings}
+                    >
+                      {filteredPacks.map((pack) => (
+                        <div key={pack.id}>
+                          <S.SetCard>
+                            <S.SetCardChrome />
+                            <S.SetCardBody>
+                              <S.SetSeriesLabel>Booster set</S.SetSeriesLabel>
+                              <S.SetLogo
+                                alt={pack.name}
+                                draggable={false}
+                                loading="lazy"
+                                src={pack.images.logo}
+                              />
+                              <S.SetMeta>
+                                <S.SetName>{pack.name}</S.SetName>
+                                <S.SetStat>
+                                  <S.SetStatLabel>Total cards</S.SetStatLabel>
+                                  <S.SetStatValue>{pack.total}</S.SetStatValue>
+                                </S.SetStat>
+                              </S.SetMeta>
+                            </S.SetCardBody>
+                          </S.SetCard>
+                        </div>
+                      ))}
+                    </Slider>
+                    <S.PrevArrow
+                      aria-label="View previous set"
+                      onClick={() => sliderRef.current?.slickPrev()}
+                    >
+                      <ChevronLeft size={18} strokeWidth={2.4} />
+                    </S.PrevArrow>
+                    <S.NextArrow
+                      aria-label="View next set"
+                      onClick={() => sliderRef.current?.slickNext()}
+                    >
+                      <ChevronRight size={18} strokeWidth={2.4} />
+                    </S.NextArrow>
+                  </S.SliderShell>
+                ) : searchQuery ? (
+                  <S.SelectorState>
+                    <S.SelectorStateTitle>No results</S.SelectorStateTitle>
+                    <S.SelectorStateCopy>
+                      No sets match &ldquo;{searchQuery}&rdquo;.
+                    </S.SelectorStateCopy>
+                  </S.SelectorState>
+                ) : (
+                  <S.SelectorState>
+                    <S.SelectorStateTitle>No sets available</S.SelectorStateTitle>
+                    <S.SelectorStateCopy>
+                      The API didn&apos;t return any booster sets for the
+                      selector.
+                    </S.SelectorStateCopy>
+                  </S.SelectorState>
+                )}
               </S.SelectorViewport>
-              <S.SelectorFooter>
-                {selectionPositionLabel ? (
-                  <S.SelectionMeta>{selectionPositionLabel}</S.SelectionMeta>
-                ) : null}
-                <S.SelectButton onClick={() => handleSelectPack(activePack)}>
-                  {`Open ${activePack.name}`}
+              <S.SelectorFooter style={{ visibility: activePack ? 'visible' : 'hidden' }}>
+                <S.SelectionMeta style={{ visibility: selectionPositionLabel ? 'visible' : 'hidden' }}>
+                  {selectionPositionLabel ?? ' '}
+                </S.SelectionMeta>
+                <S.SelectButton onClick={() => activePack && handleSelectPack(activePack)}>
+                  Open set
                 </S.SelectButton>
               </S.SelectorFooter>
             </>
-          ) : (
-            <S.SelectorState>
-              <S.SelectorStateTitle>No sets available</S.SelectorStateTitle>
-              <S.SelectorStateCopy>
-                The API didn&apos;t return any booster sets for the selector.
-              </S.SelectorStateCopy>
-            </S.SelectorState>
           )}
         </S.SelectorPanel>
       ) : null}
