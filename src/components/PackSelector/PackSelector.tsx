@@ -5,7 +5,7 @@ import Slider, { Settings } from 'react-slick'
 import 'slick-carousel/slick/slick.css'
 
 import { SelectedPackContext } from '@/context/SelectedPack'
-import { useBoosterPacksQuery } from '@/hooks/useBoosterPacksQuery'
+import { useBoosterPacksQuery } from '@/hooks/api/useBoosterPacksQuery'
 import { Pack } from '@/types/api'
 
 import * as S from './PackSelector.styles'
