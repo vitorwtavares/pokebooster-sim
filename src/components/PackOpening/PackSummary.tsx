@@ -25,6 +25,8 @@ const PackSummary: FC<PackSummaryProps> = ({
     [cards, inspectedCardId],
   )
 
+  const closeInspector = () => setInspectedCardId(null)
+
   useEffect(() => {
     if (!inspectedCardId) return
 
@@ -39,7 +41,7 @@ const PackSummary: FC<PackSummaryProps> = ({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setInspectedCardId(null)
+        closeInspector()
         return
       }
 
@@ -67,7 +69,7 @@ const PackSummary: FC<PackSummaryProps> = ({
         <S.SummarySubheading>
           {isGodPack
             ? 'Every card in this pack rolled as a high-rarity hit.'
-            : 'All 10 cards from this pack, ready for one last look.'}
+            : 'All cards from this pack, ready for one last look.'}
         </S.SummarySubheading>
       </S.SummaryHeader>
       <S.SummaryGrid>
@@ -98,19 +100,23 @@ const PackSummary: FC<PackSummaryProps> = ({
           Open another pack
         </S.SummaryButton>
       </S.SummaryFooter>
+      {inspectedCard ? (
+        <S.InspectorHintOverlay>
+          <S.InspectorHint>Click or press Esc to close</S.InspectorHint>
+        </S.InspectorHintOverlay>
+      ) : null}
       <AnimatePresence>
         {inspectedCard ? (
-          <S.InspectorOverlay onClick={() => setInspectedCardId(null)}>
+          <S.InspectorOverlay onClick={closeInspector}>
             <S.InspectorBackdrop
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               initial={{ opacity: 0 }}
             />
             <S.InspectorViewport onClick={(event) => event.stopPropagation()}>
-              <S.InspectorHint>Click or press Esc to close</S.InspectorHint>
               <S.InspectorCardMotion
                 layoutId={`summary-card-${inspectedCard.id}`}
-                onClick={() => setInspectedCardId(null)}
+                onClick={closeInspector}
                 ref={inspectorCardRef}
                 transition={{
                   duration: 0.48,

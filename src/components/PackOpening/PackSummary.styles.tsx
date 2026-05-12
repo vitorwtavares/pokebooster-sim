@@ -155,6 +155,15 @@ export const InspectorViewport = styled(motion.div)`
   }
 `
 
+export const InspectorHintOverlay = styled(Flex)`
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  z-index: 31;
+  transform: translateX(-50%);
+  pointer-events: none;
+`
+
 export const InspectorHint = styled(Text)`
   color: rgba(255, 255, 255, 0.8);
   font-size: 12px;
@@ -179,7 +188,7 @@ export const InspectorImage = styled(Image)`
   display: block;
   width: auto;
   max-width: 100%;
-  max-height: calc(100dvh - 140px);
+  max-height: calc(100dvh - 170px);
   height: auto;
   border-radius: 22px;
   box-shadow: 0 36px 64px rgba(0, 0, 0, 0.38);
@@ -193,12 +202,16 @@ export const SummaryFooter = styled(Flex)`
 
 export const SummaryButton = styled(Button)`
   min-width: 190px;
-  height: 40px;
+  height: 48px;
+  padding: 0 24px;
   border-radius: 999px;
   background-color: rgb(255, 255, 255);
   color: rgba(18, 24, 38, 0.96);
   border: none;
+  font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.85),
     0 0 12px rgba(255, 255, 255, 0),
