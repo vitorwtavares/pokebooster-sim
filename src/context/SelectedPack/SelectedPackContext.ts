@@ -1,8 +1,4 @@
 import { createContext } from 'react'
-import {
-  DEFAULT_SELECTED_BOOSTER_PACK_ID,
-  DEFAULT_SELECTED_BOOSTER_PACK_CARDS_AMOUNT,
-} from '@/utils/constants'
 
 export interface SelectedPack {
   id: string
@@ -15,9 +11,9 @@ interface SelectedPackContextProps {
   setSelectedPack: (selectedPack: SelectedPack) => void
 }
 
-export const defaultSelectedPack = {
-  id: DEFAULT_SELECTED_BOOSTER_PACK_ID,
-  total: DEFAULT_SELECTED_BOOSTER_PACK_CARDS_AMOUNT,
+export const defaultSelectedPack: SelectedPack = {
+  id: '',
+  total: 0,
 }
 
 export const SelectedPackContext = createContext<SelectedPackContextProps>({
