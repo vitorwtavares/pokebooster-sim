@@ -10,6 +10,7 @@ import { buildPackFromSetCards } from '@/utils/buildPackFromSetCards'
 
 import CardRevealStack from './CardRevealStack'
 import PackCutting from './PackCutting'
+import PackSummary from './PackSummary'
 import PackTear from './PackTear'
 
 interface PackOpeningProps {
@@ -25,6 +26,7 @@ interface PackOpeningProps {
   onFlipCard: () => void
   onOpenAnother: () => void
   onOpeningAnimationComplete: () => void
+  onSkipReveal: (cardsCount: number) => void
 }
 
 const OPENING_PREVIEW_DURATION_MS = 700
@@ -32,6 +34,7 @@ const OPENING_PREVIEW_DURATION_MS = 700
 interface PackRequestState {
   cards: CardType[]
   errorMessage: string | null
+  isGodPack: boolean
   isLoading: boolean
 }
 
@@ -48,6 +51,7 @@ const PackOpening: FC<PackOpeningProps> = ({
   onFlipCard,
   onOpenAnother,
   onOpeningAnimationComplete,
+  onSkipReveal,
 }) => {
   const { selectedPack } = useContext(SelectedPackContext)
   const packArt = usePackArt(selectedPack.id)
@@ -59,9 +63,11 @@ const PackOpening: FC<PackOpeningProps> = ({
     refetch: refetchSelectedSetCards,
   } = usePackCardsQuery(selectedPack.id, selectedPack.total)
   const latestPackBuildRunRef = useRef(0)
+  const shouldForceNextGodPackRef = useRef(false)
   const [packRequestState, setPackRequestState] = useState<PackRequestState>({
     cards: [],
     errorMessage: null,
+    isGodPack: false,
     isLoading: false,
   })
   const isSelectedSetReady =
@@ -91,11 +97,13 @@ const PackOpening: FC<PackOpeningProps> = ({
 
     const nextPackBuildRun = latestPackBuildRunRef.current + 1
     latestPackBuildRunRef.current = nextPackBuildRun
+    const shouldForceGodPackForRun = shouldForceNextGodPackRef.current
 
     const buildPack = async () => {
       setPackRequestState({
         cards: [],
         errorMessage: null,
+        isGodPack: false,
         isLoading: true,
       })
 
@@ -103,6 +111,7 @@ const PackOpening: FC<PackOpeningProps> = ({
         setPackRequestState({
           cards: [],
           errorMessage: 'The cards for this set are still loading.',
+          isGodPack: false,
           isLoading: false,
         })
         return
@@ -110,11 +119,32 @@ const PackOpening: FC<PackOpeningProps> = ({
 
       if (latestPackBuildRunRef.current !== nextPackBuildRun) return
 
+      const nextPack = buildPackFromSetCards(
+        selectedPack.id,
+        selectedSetCards,
+        {
+          forceGodPack: shouldForceGodPackForRun,
+        },
+      )
+
+      if (shouldForceGodPackForRun) {
+        console.log('[god-pack-test]', {
+          rarities: nextPack.cards.map(
+            (card) => card.rarity ?? 'Unknown rarity',
+          ),
+        })
+      }
+
       setPackRequestState({
-        cards: buildPackFromSetCards(selectedPack.id, selectedSetCards),
+        cards: nextPack.cards,
         errorMessage: null,
+        isGodPack: nextPack.isGodPack,
         isLoading: false,
       })
+
+      if (shouldForceGodPackForRun) {
+        shouldForceNextGodPackRef.current = false
+      }
     }
 
     void buildPack()
@@ -135,6 +165,17 @@ const PackOpening: FC<PackOpeningProps> = ({
         onFlipCard={onFlipCard}
         onOpenAnother={onOpenAnother}
         revealedIndex={revealedIndex}
+        onSkipReveal={() => onSkipReveal(packRequestState.cards.length)}
+      />
+    )
+  }
+
+  if (phase === 'summary') {
+    return (
+      <PackSummary
+        cards={packRequestState.cards}
+        isGodPack={packRequestState.isGodPack}
+        onOpenAnother={onOpenAnother}
       />
     )
   }
@@ -150,6 +191,10 @@ const PackOpening: FC<PackOpeningProps> = ({
       onCutFinish={onCutFinish}
       onRetryLoadSet={() => {
         void refetchSelectedSetCards()
+      }}
+      onForceGodPack={() => {
+        shouldForceNextGodPackRef.current = true
+        onCutFinish()
       }}
       onCutStart={onCutStart}
     />

@@ -1,5 +1,6 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { FastForward } from 'lucide-react'
 
 import { Card } from '@/components'
 import { Card as CardType } from '@/types/api'
@@ -15,6 +16,7 @@ interface CardRevealStackProps {
   onAdvanceCard: () => void
   onFlipCard: () => void
   onOpenAnother: () => void
+  onSkipReveal: () => void
 }
 
 const CardRevealStack: FC<CardRevealStackProps> = ({
@@ -26,8 +28,10 @@ const CardRevealStack: FC<CardRevealStackProps> = ({
   onAdvanceCard,
   onFlipCard,
   onOpenAnother,
+  onSkipReveal,
 }) => {
   const currentCard = cards[revealedIndex]
+  const [detailsCard, setDetailsCard] = useState(currentCard)
   const queuedCards = cards.slice(revealedIndex + 1, revealedIndex + 5)
   const isPackComplete = cards.length > 0 && revealedIndex >= cards.length
 
@@ -71,10 +75,7 @@ const CardRevealStack: FC<CardRevealStackProps> = ({
       <S.RevealContainer>
         <S.StatePanel>
           <S.CardName>Pack cleared</S.CardName>
-          <S.HelperText>
-            All 10 cards have been revealed. Phase 6 can build the summary from
-            here, but the full reveal loop is now in place.
-          </S.HelperText>
+          <S.HelperText>All 10 cards have been revealed.</S.HelperText>
           <S.ActionButton onClick={onOpenAnother}>
             Open another pack
           </S.ActionButton>
@@ -89,20 +90,15 @@ const CardRevealStack: FC<CardRevealStackProps> = ({
       return
     }
 
+    setDetailsCard(currentCard)
     onFlipCard()
   }
 
   return (
     <S.RevealContainer>
       <S.ActiveCardDetails $isVisible={isTopCardFlipped}>
-        {isTopCardFlipped ? (
-          <>
-            <S.CardName>{currentCard.name ?? 'Mystery pull'}</S.CardName>
-            <S.CardRarity>
-              {currentCard.rarity ?? 'Unknown rarity'}
-            </S.CardRarity>
-          </>
-        ) : null}
+        <S.CardName>{detailsCard?.name ?? 'Mystery pull'}</S.CardName>
+        <S.CardRarity>{detailsCard?.rarity ?? 'Unknown rarity'}</S.CardRarity>
       </S.ActiveCardDetails>
       <S.RevealStage>
         <S.StackShell>
@@ -115,7 +111,7 @@ const CardRevealStack: FC<CardRevealStackProps> = ({
                 key={card.id}
               />
             ))}
-          <AnimatePresence mode="wait">
+          <AnimatePresence initial={false}>
             <motion.div
               animate={{
                 opacity: 1,
@@ -124,7 +120,7 @@ const CardRevealStack: FC<CardRevealStackProps> = ({
                 y: 0,
               }}
               exit={{ opacity: 0, rotate: 6, scale: 0.94, y: -70 }}
-              initial={{ opacity: 0, rotate: -4, scale: 0.96, y: 28 }}
+              initial={{ opacity: 1, rotate: -2, scale: 0.98, y: 14 }}
               key={currentCard.id}
               style={{ position: 'absolute', inset: 0, zIndex: 5 }}
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
@@ -141,14 +137,23 @@ const CardRevealStack: FC<CardRevealStackProps> = ({
         </S.StackShell>
       </S.RevealStage>
       <S.BottomRow>
-        <S.CounterPill>
-          <S.CounterLabel>Card</S.CounterLabel>
-          <S.CounterValue>
-            {Math.min(revealedIndex + 1, cards.length)}
-            <S.CounterDivider />
-            {cards.length}
-          </S.CounterValue>
-        </S.CounterPill>
+        <S.CounterRow>
+          <S.CounterPill>
+            <S.CounterLabel>Card</S.CounterLabel>
+            <S.CounterValue>
+              {Math.min(revealedIndex + 1, cards.length)}
+              <S.CounterDivider />
+              {cards.length}
+            </S.CounterValue>
+          </S.CounterPill>
+          <S.SkipButton
+            aria-label="Skip to pack summary"
+            onClick={onSkipReveal}
+            title="Skip to summary"
+          >
+            <FastForward strokeWidth={2.1} />
+          </S.SkipButton>
+        </S.CounterRow>
         <S.StatusText>
           {isTopCardFlipped
             ? 'Tap the card to continue'

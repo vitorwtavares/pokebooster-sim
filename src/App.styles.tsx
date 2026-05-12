@@ -15,5 +15,5 @@ export const ContentWrapper = styled(Flex)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px 0;
+  padding: 8px 0;
 `

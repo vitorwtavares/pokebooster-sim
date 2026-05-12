@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, KeyboardEvent, useEffect, useState } from 'react'
 import Tilt from 'react-parallax-tilt'
 
 import cardBack from '@/assets/card-back.png'
@@ -26,35 +26,47 @@ const Card: FC<CardProps> = ({ card, isCardFlipped, onClick }) => {
     return () => window.clearTimeout(enableTiltTimeout)
   }, [shouldCardBeFlipped])
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!onClick) return
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      onClick()
+    }
+  }
+
   return (
-    <S.CardContainer
-      onClick={onClick}
-      shouldCardBeFlipped={shouldCardBeFlipped}
-      $isClickable={Boolean(onClick)}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
-    >
-      <S.CardBack>
-        <S.CardImage draggable={false} src={cardBack} />
-      </S.CardBack>
-      <S.CardFront>
-        <Tilt
-          glareEnable={isTiltReady}
-          glareMaxOpacity={0.3}
-          glareColor="white"
-          glarePosition="all"
-          glareBorderRadius="15px"
-          scale={isTiltReady ? 1.1 : 1}
-          tiltEnable={isTiltReady}
-        >
-          <S.CardImage
-            alt={card?.name ?? 'Pokemon card'}
-            draggable={false}
-            src={card?.images && card?.images?.large}
-          />
-        </Tilt>
-      </S.CardFront>
-    </S.CardContainer>
+    <S.CardScene>
+      <S.CardContainer
+        onClick={onClick}
+        onKeyDown={handleKeyDown}
+        shouldCardBeFlipped={shouldCardBeFlipped}
+        $isClickable={Boolean(onClick)}
+        role={onClick ? 'button' : undefined}
+        tabIndex={onClick ? 0 : undefined}
+      >
+        <S.CardBack>
+          <S.CardImage draggable={false} src={cardBack} />
+        </S.CardBack>
+        <S.CardFront>
+          <Tilt
+            glareEnable={isTiltReady}
+            glareMaxOpacity={0.3}
+            glareColor="white"
+            glarePosition="all"
+            glareBorderRadius="15px"
+            scale={isTiltReady ? 1.1 : 1}
+            tiltEnable={isTiltReady}
+          >
+            <S.CardImage
+              alt={card?.name ?? 'Pokemon card'}
+              draggable={false}
+              src={card?.images && card?.images?.large}
+            />
+          </Tilt>
+        </S.CardFront>
+      </S.CardContainer>
+    </S.CardScene>
   )
 }
 

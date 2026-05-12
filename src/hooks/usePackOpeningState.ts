@@ -6,6 +6,7 @@ export type PackOpeningPhase =
   | 'finishing'
   | 'opening'
   | 'revealing'
+  | 'summary'
 
 export const usePackOpeningState = () => {
   const [phase, setPhase] = useState<PackOpeningPhase>('idle')
@@ -46,10 +47,25 @@ export const usePackOpeningState = () => {
     setIsTopCardFlipped(true)
   }, [])
 
-  const advanceCard = useCallback((cardsCount: number) => {
-    setRevealedIndex((currentIndex) =>
-      currentIndex >= cardsCount ? currentIndex : currentIndex + 1,
-    )
+  const advanceCard = useCallback(
+    (cardsCount: number) => {
+      const nextIndex = revealedIndex + 1
+
+      if (nextIndex >= cardsCount) {
+        setPhase('summary')
+        setRevealedIndex(cardsCount)
+      } else {
+        setRevealedIndex(nextIndex)
+      }
+
+      setIsTopCardFlipped(false)
+    },
+    [revealedIndex],
+  )
+
+  const skipReveal = useCallback((cardsCount: number) => {
+    setPhase('summary')
+    setRevealedIndex(cardsCount)
     setIsTopCardFlipped(false)
   }, [])
 
@@ -71,6 +87,7 @@ export const usePackOpeningState = () => {
     beginReveal,
     flipTopCard,
     advanceCard,
+    skipReveal,
     resetOpening,
   }
 }

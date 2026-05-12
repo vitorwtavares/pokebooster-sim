@@ -1,6 +1,8 @@
 import { Box, Button, Flex, Spinner, Text } from '@chakra-ui/react'
 import styled from '@emotion/styled'
 
+import cardBack from '@/assets/card-back.png'
+
 export const RevealContainer = styled(Flex)`
   width: 100%;
   flex-direction: column;
@@ -30,11 +32,13 @@ export const StackBackCard = styled(Box, {
   position: absolute;
   inset: 0;
   border-radius: 18px;
-  background: linear-gradient(
-    180deg,
-    rgba(34, 48, 84, 0.96) 0%,
-    rgba(18, 26, 45, 0.98) 100%
-  );
+  background-color: rgba(18, 26, 45, 0.98);
+  background-image:
+    linear-gradient(rgba(10, 16, 28, 0.08), rgba(10, 16, 28, 0.08)),
+    url(${cardBack});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   box-shadow:
     0 24px 45px rgba(0, 0, 0, 0.35),
     inset 0 0 0 2px rgba(255, 255, 255, 0.12);
@@ -61,6 +65,40 @@ export const CounterPill = styled(Box)`
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 `
 
+export const CounterRow = styled(Flex)`
+  position: relative;
+  width: fit-content;
+  justify-content: center;
+  align-items: center;
+`
+
+export const SkipButton = styled(Button)`
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(10, 16, 28, 0.42);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(16, 23, 38, 0.58);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`
+
 export const StatusText = styled(Text)`
   text-align: center;
   color: rgba(255, 255, 255, 0.78);
@@ -81,7 +119,7 @@ export const ActiveCardDetails = styled(Flex, {
   min-height: 58px;
   opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   transform: ${({ $isVisible }) =>
-    $isVisible ? 'translateY(0)' : 'translateY(10px)'};
+    $isVisible ? 'translateY(0)' : 'translateY(-10px)'};
   transition-property: opacity, transform;
   transition-duration: 0.45s, 0.45s;
   transition-timing-function: ease, ease;
@@ -97,11 +135,6 @@ export const CardName = styled(Text)`
   text-align: center;
   line-height: 1.05;
   text-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
-
-  @media only screen and (max-width: 768px) {
-    text-align: center;
-    font-size: 32px;
-  }
 `
 
 export const CardRarity = styled(Text)`
@@ -126,7 +159,7 @@ export const CounterLabel = styled(Text)`
   color: rgba(255, 255, 255, 0.78);
 `
 
-export const CounterValue = styled(Text)`
+export const CounterValue = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -136,9 +169,10 @@ export const CounterValue = styled(Text)`
   font-variant-numeric: tabular-nums;
 `
 
-export const CounterDivider = styled(Box)`
+export const CounterDivider = styled.span`
   width: 12px;
   height: 1px;
+  display: inline-block;
   background: rgba(255, 255, 255, 0.28);
 `
 
