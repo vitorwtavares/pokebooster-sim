@@ -20,7 +20,7 @@ const Credits = () => {
       <Dialog.Root open={open} onOpenChange={(e) => !e.open && onClose()}>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content>
+          <Dialog.Content bg="#ddd">
             <Dialog.Header>Credits</Dialog.Header>
             <Dialog.CloseTrigger asChild position="absolute" top="2" right="2">
               <CloseButton />
