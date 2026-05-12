@@ -4,7 +4,7 @@ import {
   DEFAULT_SELECTED_BOOSTER_PACK_CARDS_AMOUNT,
 } from '@/utils/constants'
 
-interface SelectedPack {
+export interface SelectedPack {
   id: string
   total: number
   logoUrl?: string
