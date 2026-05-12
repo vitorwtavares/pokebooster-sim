@@ -37,11 +37,8 @@ export const useBoosterPacksQuery = () => {
   return useQuery({
     queryKey: boosterPacksQueryKey,
     queryFn: fetchBoosterPacks,
-    // staleTime: 0 means the cache is immediately stale, so a background
-    // refetch fires on every page load. Combined with initialData from
-    // localStorage, this gives instant first render + completeness check
-    // on every visit without a visible loading state.
-    staleTime: 0,
+    staleTime: 24 * 60 * 60 * 1000,
     initialData: cached?.data,
+    initialDataUpdatedAt: cached?.savedAt,
   })
 }
