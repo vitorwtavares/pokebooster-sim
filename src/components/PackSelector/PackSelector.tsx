@@ -75,6 +75,11 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
       ? (boosterPacks[activeIndex] ?? null)
       : null
 
+  const activePackRef = useRef(activePack)
+  useEffect(() => {
+    activePackRef.current = activePack
+  }, [activePack])
+
   useEffect(() => {
     if (!isOpen) return
 
@@ -82,6 +87,13 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
       if (event.key === 'Escape') {
         triggerButtonRef.current?.blur()
         onToggle()
+      } else if (event.key === 'ArrowLeft') {
+        sliderRef.current?.slickPrev()
+      } else if (event.key === 'ArrowRight') {
+        sliderRef.current?.slickNext()
+      } else if (event.key === 'Enter' && activePackRef.current) {
+        event.preventDefault()
+        handleSelectPack(activePackRef.current)
       }
     }
 
@@ -110,8 +122,10 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
     ),
     slidesToScroll: 1,
     slidesToShow,
-    speed: 320,
+    accessibility: false,
+    speed: 180,
     swipeToSlide: true,
+    waitForAnimate: false,
     afterChange: (current: number) => {
       setActiveIndex(current)
       userNavigatedRef.current = true
@@ -217,7 +231,7 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
                   <S.SelectionMeta>{selectionPositionLabel}</S.SelectionMeta>
                 ) : null}
                 <S.SelectButton onClick={() => handleSelectPack(activePack)}>
-                  {`Open ${activePack.name}`}
+                  Open set
                 </S.SelectButton>
               </S.SelectorFooter>
             </>
