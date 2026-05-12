@@ -33,13 +33,12 @@ const CardRevealStack: FC<CardRevealStackProps> = ({
   const currentCard = cards[revealedIndex]
   const [detailsCard, setDetailsCard] = useState(currentCard)
   const queuedCards = cards.slice(revealedIndex + 1, revealedIndex + 5)
-  const isPackComplete = cards.length > 0 && revealedIndex >= cards.length
 
   if (errorMessage) {
     return (
       <S.RevealContainer>
         <S.StatePanel>
-          <S.CardName>Pack opening hit a snag</S.CardName>
+          <S.CardName>Pack opening failed</S.CardName>
           <S.HelperText>{errorMessage}</S.HelperText>
           <S.ActionButton onClick={onOpenAnother}>Try again</S.ActionButton>
         </S.StatePanel>
@@ -65,20 +64,6 @@ const CardRevealStack: FC<CardRevealStackProps> = ({
             reset and try again.
           </S.HelperText>
           <S.ActionButton onClick={onOpenAnother}>Reset pack</S.ActionButton>
-        </S.StatePanel>
-      </S.RevealContainer>
-    )
-  }
-
-  if (isPackComplete) {
-    return (
-      <S.RevealContainer>
-        <S.StatePanel>
-          <S.CardName>Pack cleared</S.CardName>
-          <S.HelperText>All 10 cards have been revealed.</S.HelperText>
-          <S.ActionButton onClick={onOpenAnother}>
-            Open another pack
-          </S.ActionButton>
         </S.StatePanel>
       </S.RevealContainer>
     )
