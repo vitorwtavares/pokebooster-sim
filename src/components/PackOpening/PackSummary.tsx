@@ -69,7 +69,7 @@ const PackSummary: FC<PackSummaryProps> = ({
         <S.SummarySubheading>
           {isGodPack
             ? 'Every card in this pack rolled as a high-rarity hit.'
-            : 'All 10 cards from this pack, ready for one last look.'}
+            : 'All cards from this pack, ready for one last look.'}
         </S.SummarySubheading>
       </S.SummaryHeader>
       <S.SummaryGrid>
