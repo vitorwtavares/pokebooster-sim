@@ -3,6 +3,30 @@ import { css, keyframes } from '@emotion/react'
 import styled from '@emotion/styled'
 
 import deluxePackBg from '@/assets/deluxe-pack-bg.jpg'
+import pokeballIcon from '@/assets/pokeball_pattern_icon.png'
+
+const pb = `url(${pokeballIcon})`
+
+// Top strip: 3 rows — small top, large middle (shifted half-step), small bottom
+// Row centres at ~11px, ~33px, ~55px in a 67px strip
+const topRows = [
+  ...[0, 44, 88, 132, 176, 220, 264].map((x) => ({ x, y: 0, s: 22 })), // top small
+  ...[22, 66, 110, 154, 198, 242].map((x) => ({ x, y: 18, s: 30 })), // middle large (shifted 22px)
+  ...[0, 44, 88, 132, 176, 220, 264].map((x) => ({ x, y: 45, s: 22 })), // bottom small
+]
+const topBgImage = topRows.map(() => pb).join(', ')
+const topBgSize = topRows.map(({ s }) => `${s}px ${s - 2}px`).join(', ')
+const topBgPos = topRows.map(({ x, y }) => `${x}px ${y}px`).join(', ')
+
+// Bottom strip: alternating big (32px, y=-2 so top is clipped) / small (20px, centred in 29px strip)
+// Repeat unit: big(32) + 6px gap + small(20) + 6px gap = 64px
+const bottomRows = [
+  ...[0, 64, 128, 192, 256].map((x) => ({ x, y: -2, s: 32 })), // big, clipped at top
+  ...[38, 102, 166, 230].map((x) => ({ x, y: 5, s: 20 })), // small, centred
+]
+const bottomBgImage = bottomRows.map(() => pb).join(', ')
+const bottomBgSize = bottomRows.map(({ s }) => `${s}px ${s - 2}px`).join(', ')
+const bottomBgPos = bottomRows.map(({ x, y }) => `${x}px ${y}px`).join(', ')
 
 const float = keyframes`
   0%, 100% { transform: translateY(0); }
@@ -195,6 +219,19 @@ export const PackTopStrip = styled(Box)`
   );
   pointer-events: none;
 
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: ${topBgImage};
+    background-size: ${topBgSize};
+    background-position: ${topBgPos};
+    background-repeat: no-repeat;
+    filter: invert(1);
+    opacity: 0.075;
+    pointer-events: none;
+  }
+
   &::after {
     content: '';
     position: absolute;
@@ -230,6 +267,19 @@ export const PackBottomStrip = styled(Box)`
   );
   border-top: 1px solid rgba(0, 0, 0, 0.28);
   pointer-events: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: ${bottomBgImage};
+    background-size: ${bottomBgSize};
+    background-position: ${bottomBgPos};
+    background-repeat: no-repeat;
+    filter: invert(1);
+    opacity: 0.075;
+    pointer-events: none;
+  }
 `
 
 export const PackLogo = styled.img`
