@@ -79,6 +79,14 @@ export const PackBodySlice = styled(Box)`
   clip-path: inset(${PACK_CRIMP_SPLIT} 0 0 0 round 0 0 12px 12px);
 `
 
+export const PackArtContainer = styled(Box)`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+`
+
 export const PackImage = styled.img`
   width: 100%;
   height: 100%;
@@ -86,6 +94,40 @@ export const PackImage = styled.img`
   user-select: none;
   pointer-events: none;
   -webkit-user-drag: none;
+`
+
+export const PackSheen = styled(Box)`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background:
+    radial-gradient(
+      ellipse 76px 80% at -10px 36%,
+      rgba(255, 255, 255, 0.64) 0%,
+      rgba(255, 255, 255, 0.26) 28%,
+      rgba(255, 255, 255, 0) 66%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0) 22%
+    ),
+    radial-gradient(
+      ellipse at -4% 0%,
+      rgba(255, 255, 255, 0.26) 0%,
+      rgba(255, 255, 255, 0) 40%
+    ),
+    linear-gradient(
+      270deg,
+      rgba(0, 0, 0, 0.28) 0%,
+      rgba(0, 0, 0, 0.1) 6%,
+      rgba(0, 0, 0, 0) 13%
+    ),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0) 8%);
+  box-shadow:
+    inset -8px 0 20px rgba(0, 0, 0, 0.06),
+    inset 0 -8px 20px rgba(0, 0, 0, 0.05);
 `
 
 export const PackFallback = styled(Box)`
@@ -149,10 +191,10 @@ export const PackTopStrip = styled(Box)`
   &::after {
     content: '';
     position: absolute;
-    bottom: -3px;
+    bottom: -6px;
     left: 0;
     right: 0;
-    height: 7px;
+    height: 12px;
     background: linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.38) 0%,
@@ -193,6 +235,21 @@ export const PackLogo = styled.img`
   object-fit: contain;
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45));
+  user-select: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+`
+
+export const PackCrimpLogo = styled.img`
+  position: absolute;
+  top: calc(3% - 2px);
+  left: 50%;
+  z-index: 2;
+  width: 44%;
+  max-height: 8%;
+  object-fit: contain;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7)) brightness(1.1);
   user-select: none;
   pointer-events: none;
   -webkit-user-drag: none;
