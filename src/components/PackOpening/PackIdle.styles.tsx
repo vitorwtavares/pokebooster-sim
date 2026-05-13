@@ -61,8 +61,8 @@ export const PackWrapper = styled(Box, {
   `};
   filter: ${({ $glowVisible }) =>
     $glowVisible
-      ? 'drop-shadow(0 20px 40px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 22px rgba(30, 80, 255, 0.55)) drop-shadow(0 0 60px rgba(30, 80, 255, 0.25))'
-      : 'drop-shadow(0 20px 40px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 22px rgba(30, 80, 255, 0)) drop-shadow(0 0 60px rgba(30, 80, 255, 0))'};
+      ? 'drop-shadow(0 20px 40px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 22px rgba(255, 255, 255, 0.35)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.15))'
+      : 'drop-shadow(0 20px 40px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 22px rgba(255, 255, 255, 0)) drop-shadow(0 0 60px rgba(255, 255, 255, 0))'};
   transition: filter 0.4s ease;
 
   @media only screen and (max-width: 768px) {
