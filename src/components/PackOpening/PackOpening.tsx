@@ -1,4 +1,5 @@
 import { FC, useContext, useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 
 import fallbackLogo from '@/assets/fallback-logo.png'
 import { SelectedPackContext } from '@/context/SelectedPack'
@@ -150,54 +151,72 @@ const PackOpening: FC<PackOpeningProps> = ({
     void buildPack()
   }, [openingRun, phase, selectedPack.id, selectedSetCards])
 
-  if (phase === 'opening') {
-    return <PackTear logoSrc={logoSrc} packArt={packArt} />
-  }
-
-  if (phase === 'revealing') {
+  const content = (() => {
+    if (phase === 'opening') {
+      return <PackTear logoSrc={logoSrc} packArt={packArt} />
+    }
+    if (phase === 'revealing') {
+      return (
+        <CardRevealStack
+          cards={packRequestState.cards}
+          errorMessage={packRequestState.errorMessage}
+          isLoading={packRequestState.isLoading}
+          isTopCardFlipped={isTopCardFlipped}
+          onAdvanceCard={() => onAdvanceCard(packRequestState.cards.length)}
+          onFlipCard={onFlipCard}
+          onOpenAnother={onOpenAnother}
+          revealedIndex={revealedIndex}
+          onSkipReveal={() => onSkipReveal(packRequestState.cards.length)}
+        />
+      )
+    }
+    if (phase === 'summary') {
+      return (
+        <PackSummary
+          cards={packRequestState.cards}
+          isGodPack={packRequestState.isGodPack}
+          onOpenAnother={onOpenAnother}
+        />
+      )
+    }
     return (
-      <CardRevealStack
-        cards={packRequestState.cards}
-        errorMessage={packRequestState.errorMessage}
-        isLoading={packRequestState.isLoading}
-        isTopCardFlipped={isTopCardFlipped}
-        onAdvanceCard={() => onAdvanceCard(packRequestState.cards.length)}
-        onFlipCard={onFlipCard}
-        onOpenAnother={onOpenAnother}
-        revealedIndex={revealedIndex}
-        onSkipReveal={() => onSkipReveal(packRequestState.cards.length)}
+      <PackCutting
+        canOpenPack={isSelectedSetReady}
+        hasLoadError={hasSelectedSetLoadError}
+        isLoading={isSelectedSetLoading}
+        phase={phase}
+        packHintText={packHintText}
+        onCutCancel={onCutCancel}
+        onCutComplete={onCutComplete}
+        onCutFinish={onCutFinish}
+        onRetryLoadSet={() => {
+          void refetchSelectedSetCards()
+        }}
+        onForceGodPack={() => {
+          shouldForceNextGodPackRef.current = true
+          onCutFinish()
+        }}
+        onCutStart={onCutStart}
       />
     )
-  }
-
-  if (phase === 'summary') {
-    return (
-      <PackSummary
-        cards={packRequestState.cards}
-        isGodPack={packRequestState.isGodPack}
-        onOpenAnother={onOpenAnother}
-      />
-    )
-  }
+  })()
 
   return (
-    <PackCutting
-      canOpenPack={isSelectedSetReady}
-      hasLoadError={hasSelectedSetLoadError}
-      phase={phase}
-      packHintText={packHintText}
-      onCutCancel={onCutCancel}
-      onCutComplete={onCutComplete}
-      onCutFinish={onCutFinish}
-      onRetryLoadSet={() => {
-        void refetchSelectedSetCards()
-      }}
-      onForceGodPack={() => {
-        shouldForceNextGodPackRef.current = true
-        onCutFinish()
-      }}
-      onCutStart={onCutStart}
-    />
+    <>
+      <motion.div
+        animate={{ opacity: isSelectedSetLoading ? 0 : 1 }}
+        initial={{ opacity: 0 }}
+        transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: -1,
+          background: 'rgba(0, 0, 0, 0.4)',
+          pointerEvents: 'none',
+        }}
+      />
+      {content}
+    </>
   )
 }
 
