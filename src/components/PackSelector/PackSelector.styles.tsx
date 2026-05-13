@@ -146,6 +146,7 @@ export const SetCard = styled(Box)`
     inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   opacity: 0.58;
   transform: scale(0.9);
+  cursor: pointer;
   transition:
     opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
@@ -183,6 +184,12 @@ export const SliderShell = styled(Box)`
 
   .slick-slide {
     height: auto;
+    outline: none;
+
+    &:focus,
+    &:focus-visible {
+      outline: none;
+    }
 
     & > div {
       display: flex;

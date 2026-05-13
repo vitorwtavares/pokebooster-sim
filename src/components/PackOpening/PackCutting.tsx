@@ -8,11 +8,13 @@ import { usePackArt } from '@/hooks/usePackArt'
 import { PackOpeningPhase } from '@/hooks/usePackOpeningState'
 
 import * as S from './PackIdle.styles'
+import PackLoadingFan from './PackLoadingFan'
 import PackVisual from './PackVisual'
 
 interface PackCuttingProps {
   canOpenPack: boolean
   hasLoadError: boolean
+  isLoading: boolean
   phase: PackOpeningPhase
   packHintText: string
   onCutCancel: () => void
@@ -32,6 +34,7 @@ const CUT_RETURN_DURATION_SECONDS = 0.18
 const PackCutting: FC<PackCuttingProps> = ({
   canOpenPack,
   hasLoadError,
+  isLoading,
   phase,
   packHintText,
   onCutCancel,
@@ -123,6 +126,14 @@ const PackCutting: FC<PackCuttingProps> = ({
     })
   }
 
+  if (isLoading) {
+    return (
+      <S.IdleContainer>
+        <PackLoadingFan />
+      </S.IdleContainer>
+    )
+  }
+
   const isCutting = phase === 'cutting' || phase === 'finishing'
   const isIdle = phase === 'idle'
   const isInteractive = canOpenPack && (phase === 'cutting' || isIdle)
@@ -150,91 +161,116 @@ const PackCutting: FC<PackCuttingProps> = ({
           test god pack
         </button>
       ) : null}
-      <S.PackWrapper>
-        <motion.div
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-        >
-          <S.PackCard
-            ref={packRef}
-            $isCutting={isCutting}
-            $isInteractive={canOpenPack}
+      <motion.div
+        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: -30 }}
+        transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <S.PackWrapper $glowVisible={isIdle}>
+          <motion.div
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
           >
-            {!isDetached && <PackVisual logoSrc={logoSrc} packArt={packArt} />}
-            {isDetached && (
-              <>
-                <S.PackBodySlice>
-                  <S.PackSurface>
-                    <PackVisual logoSrc={logoSrc} packArt={packArt} />
-                  </S.PackSurface>
-                </S.PackBodySlice>
+            <S.PackCard
+              ref={packRef}
+              $isCutting={isCutting}
+              $isInteractive={canOpenPack}
+            >
+              {!isDetached && (
+                <PackVisual logoSrc={logoSrc} packArt={packArt} />
+              )}
+              {isDetached && (
+                <>
+                  <S.PackBodySlice>
+                    <S.PackSurface>
+                      <PackVisual logoSrc={logoSrc} packArt={packArt} />
+                    </S.PackSurface>
+                  </S.PackBodySlice>
+                  <motion.div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      y: detachedCapY,
+                      rotate: detachedCapRotate,
+                      scaleX: flapScaleX,
+                      transformOrigin: 'top center',
+                      willChange: 'transform',
+                      zIndex: 2,
+                    }}
+                  >
+                    <S.PackCapSlice>
+                      <S.PackSurface>
+                        <PackVisual logoSrc={logoSrc} packArt={packArt} />
+                      </S.PackSurface>
+                    </S.PackCapSlice>
+                  </motion.div>
+                </>
+              )}
+              {shouldShowSwipeGuide && (
+                <S.SwipeGuideRail>
+                  <motion.div
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{
+                      duration: 2.5,
+                      ease: 'easeInOut',
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatDelay: 0.1,
+                    }}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      willChange: 'transform',
+                    }}
+                  >
+                    <S.SwipeGuideHighlight />
+                  </motion.div>
+                </S.SwipeGuideRail>
+              )}
+              {phase === 'cutting' && (
                 <motion.div
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    y: detachedCapY,
-                    rotate: detachedCapRotate,
-                    scaleX: flapScaleX,
-                    transformOrigin: 'top center',
+                    scaleX: lineProgress,
+                    transformOrigin: 'left center',
                     willChange: 'transform',
-                    zIndex: 2,
+                    zIndex: 3,
                   }}
                 >
-                  <S.PackCapSlice>
-                    <S.PackSurface>
-                      <PackVisual logoSrc={logoSrc} packArt={packArt} />
-                    </S.PackSurface>
-                  </S.PackCapSlice>
+                  <S.CutLine $isVisible={true}>
+                    <motion.div
+                      animate={{ x: ['-100%', '100%'] }}
+                      transition={{
+                        duration: 2.5,
+                        ease: 'easeInOut',
+                        repeat: Number.POSITIVE_INFINITY,
+                        repeatDelay: 0.1,
+                      }}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        willChange: 'transform',
+                      }}
+                    >
+                      <S.CutHighlight />
+                    </motion.div>
+                  </S.CutLine>
                 </motion.div>
-              </>
-            )}
-            {shouldShowSwipeGuide && (
-              <S.SwipeGuideRail>
-                <motion.div
-                  animate={{ x: ['-42%', '108%'] }}
-                  transition={{
-                    duration: 2.5,
-                    ease: 'easeInOut',
-                    repeat: Number.POSITIVE_INFINITY,
-                    repeatDelay: 0.1,
-                  }}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    willChange: 'transform',
-                  }}
-                >
-                  <S.SwipeGuideHighlight />
-                </motion.div>
-              </S.SwipeGuideRail>
-            )}
-            {phase === 'cutting' && (
-              <motion.div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  scaleX: lineProgress,
-                  transformOrigin: 'left center',
-                  willChange: 'transform',
-                  zIndex: 3,
-                }}
-              >
-                <S.CutLine $isVisible={true} />
-              </motion.div>
-            )}
-            <S.CutTracker
-              ref={trackerRef}
-              $isInteractive={isInteractive}
-              onPointerCancel={handlePointerEnd}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerEnd}
-            />
-          </S.PackCard>
-        </motion.div>
-      </S.PackWrapper>
+              )}
+              <S.CutTracker
+                ref={trackerRef}
+                $isInteractive={isInteractive}
+                onPointerCancel={handlePointerEnd}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerEnd}
+              />
+            </S.PackCard>
+          </motion.div>
+        </S.PackWrapper>
+      </motion.div>
       {hasLoadError ? (
         <S.ErrorActions>
           <S.SwipeHintError $isHidden={!isIdle}>
