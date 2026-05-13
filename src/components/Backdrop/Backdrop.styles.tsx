@@ -11,11 +11,4 @@ export const BackdropContainer = styled(Box)<{ $image: string }>`
   background-image: url(${({ $image }) => $image});
   background-size: cover;
   background-position: center;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-  }
 `

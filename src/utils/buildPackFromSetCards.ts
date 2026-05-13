@@ -128,6 +128,13 @@ export const buildPackFromSetCards = (
   const raresPool = setCards.filter(isRareCard)
   const godPackPool = setCards.filter(isGodPackEligibleCard)
   const noRarityPool = setCards.filter((card) => !card.rarity)
+  const categorizedIds = new Set([
+    ...commonsPool,
+    ...uncommonsPool,
+    ...raresPool,
+    ...noRarityPool,
+  ].map((c) => c.id))
+  const otherPool = setCards.filter((card) => !categorizedIds.has(card.id))
   const usedIds = new Set<string>()
   const shouldForceGodPack = options?.forceGodPack === true
   const shouldRollGodPack = Math.random() < GOD_PACK_CHANCE
@@ -153,17 +160,17 @@ export const buildPackFromSetCards = (
   }
 
   const commons = takeUniqueCards(
-    [commonsPool, uncommonsPool, raresPool, noRarityPool],
+    [commonsPool, uncommonsPool, raresPool, noRarityPool, otherPool],
     COMMONS_PER_PACK,
     usedIds,
   )
   const uncommons = takeUniqueCards(
-    [uncommonsPool, raresPool, commonsPool, noRarityPool],
+    [uncommonsPool, raresPool, commonsPool, noRarityPool, otherPool],
     UNCOMMONS_PER_PACK,
     usedIds,
   )
   const rares = takeUniqueCards(
-    [raresPool, uncommonsPool, commonsPool, noRarityPool],
+    [raresPool, uncommonsPool, commonsPool, noRarityPool, otherPool],
     RARES_PER_PACK,
     usedIds,
   )

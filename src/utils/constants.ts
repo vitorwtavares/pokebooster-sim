@@ -15,4 +15,4 @@ export const CARDS_PER_PACK = 10
 export const COMMONS_PER_PACK = 4
 export const UNCOMMONS_PER_PACK = 3
 export const RARES_PER_PACK = 3
-export const GOD_PACK_CHANCE = 0.0005
+export const GOD_PACK_CHANCE = 0.1

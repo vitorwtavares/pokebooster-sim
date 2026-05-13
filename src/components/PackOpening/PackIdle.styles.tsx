@@ -78,6 +78,8 @@ export const PackImage = styled.img`
   height: 100%;
   object-fit: contain;
   user-select: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
 `
 
 export const PackFallback = styled(Box)`
@@ -186,6 +188,8 @@ export const PackLogo = styled.img`
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45));
   user-select: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
 `
 
 export const SwipeHint = styled.div<{ $isHidden?: boolean }>`
