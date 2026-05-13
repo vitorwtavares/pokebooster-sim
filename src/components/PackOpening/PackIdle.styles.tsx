@@ -2,6 +2,8 @@ import { Box, Button, Flex } from '@chakra-ui/react'
 import { css, keyframes } from '@emotion/react'
 import styled from '@emotion/styled'
 
+import deluxePackBg from '@/assets/deluxe-pack-bg.jpg'
+
 const float = keyframes`
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
@@ -104,8 +106,8 @@ export const PackSheen = styled(Box)`
   background:
     radial-gradient(
       ellipse 76px 80% at -10px 36%,
-      rgba(255, 255, 255, 0.64) 0%,
-      rgba(255, 255, 255, 0.26) 28%,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.14) 28%,
       rgba(255, 255, 255, 0) 66%
     ),
     linear-gradient(
@@ -115,7 +117,7 @@ export const PackSheen = styled(Box)`
     ),
     radial-gradient(
       ellipse at -4% 0%,
-      rgba(255, 255, 255, 0.26) 0%,
+      rgba(255, 255, 255, 0.11) 0%,
       rgba(255, 255, 255, 0) 40%
     ),
     linear-gradient(
@@ -136,7 +138,12 @@ export const PackFallback = styled(Box)`
   height: 100%;
   border-radius: 10px;
   overflow: hidden;
-  background-color: rgb(181, 187, 198);
+  padding-top: 22%;
+  padding-bottom: 10%;
+  background:
+    url(${deluxePackBg}) center 20% / 200% no-repeat content-box,
+    rgb(21, 21, 21);
+  background-clip: content-box, border-box;
   box-shadow:
     inset 0 2px 6px rgba(255, 255, 255, 0.12),
     inset 0 -14px 28px rgba(0, 0, 0, 0.28);
@@ -149,11 +156,11 @@ export const PackFallback = styled(Box)`
     background: linear-gradient(
       135deg,
       rgba(255, 255, 255, 0) 28%,
-      rgba(255, 255, 255, 0.1) 38%,
-      rgba(255, 255, 255, 0.62) 48%,
-      rgba(255, 255, 255, 0.92) 50%,
-      rgba(244, 247, 252, 0.64) 52%,
-      rgba(255, 255, 255, 0.12) 62%,
+      rgba(255, 255, 255, 0.05) 38%,
+      rgba(255, 255, 255, 0.42) 48%,
+      rgba(255, 255, 255, 0.77) 50%,
+      rgba(244, 247, 252, 0.44) 52%,
+      rgba(255, 255, 255, 0.06) 62%,
       rgba(255, 255, 255, 0) 72%
     );
     opacity: 0.5;
