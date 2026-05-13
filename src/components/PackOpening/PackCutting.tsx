@@ -166,7 +166,7 @@ const PackCutting: FC<PackCuttingProps> = ({
         initial={{ opacity: 0, y: -30 }}
         transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
       >
-        <S.PackWrapper>
+        <S.PackWrapper $glowVisible={isIdle}>
           <motion.div
             style={{
               width: '100%',

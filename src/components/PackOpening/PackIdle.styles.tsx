@@ -25,13 +25,19 @@ export const IdleContainer = styled(Flex)`
   gap: 50px;
 `
 
-export const PackWrapper = styled(Box)`
+export const PackWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== '$glowVisible',
+})<{ $glowVisible?: boolean }>`
   width: 288px;
   height: 480px;
   animation: ${css`
     ${float} 3.5s ease-in-out infinite
   `};
-  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 1));
+  filter: ${({ $glowVisible }) =>
+    $glowVisible
+      ? 'drop-shadow(0 20px 40px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 22px rgba(30, 80, 255, 0.55)) drop-shadow(0 0 60px rgba(30, 80, 255, 0.25))'
+      : 'drop-shadow(0 20px 40px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 22px rgba(30, 80, 255, 0)) drop-shadow(0 0 60px rgba(30, 80, 255, 0))'};
+  transition: filter 0.4s ease;
 
   @media only screen and (max-width: 768px) {
     width: min(288px, calc(100vw - 48px));
