@@ -285,35 +285,37 @@ export const SwipeGuideRail = styled(Box)`
   border-radius: 999px;
   background: linear-gradient(
     90deg,
-    rgba(68, 204, 255, 0.24) 0%,
-    rgba(94, 228, 255, 0.62) 50%,
-    rgba(68, 204, 255, 0.24) 100%
+    rgba(54, 122, 229, 0.55) 0%,
+    rgba(54, 122, 229, 0.9) 20%,
+    rgba(54, 122, 229, 0.9) 80%,
+    rgba(54, 122, 229, 0.55) 100%
   );
   box-shadow:
-    0 0 12px rgba(74, 210, 255, 0.34),
-    0 0 24px rgba(74, 210, 255, 0.16),
-    0 0 3px rgba(220, 244, 255, 0.58);
+    0 0 12px rgba(54, 122, 229, 0.38),
+    0 0 24px rgba(54, 122, 229, 0.18),
+    0 0 3px rgba(54, 122, 229, 0.6);
   overflow: hidden;
   pointer-events: none;
   z-index: 2;
 `
 
 export const SwipeGuideHighlight = styled(Box)`
-  width: 34%;
+  width: 100%;
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(
     90deg,
-    rgba(177, 238, 255, 0) 0%,
-    rgba(88, 226, 255, 0.56) 30%,
-    rgba(232, 250, 255, 1) 52%,
-    rgba(88, 226, 255, 0.56) 74%,
-    rgba(177, 238, 255, 0) 100%
+    rgba(54, 122, 229, 0) 0%,
+    rgba(88, 168, 245, 0.45) 12%,
+    rgba(104, 218, 252, 0.82) 29%,
+    rgba(120, 250, 251, 1) 50%,
+    rgba(104, 218, 252, 0.82) 71%,
+    rgba(88, 168, 245, 0.45) 88%,
+    rgba(54, 122, 229, 0) 100%
   );
   box-shadow:
-    0 0 14px rgba(82, 221, 255, 0.44),
-    0 0 28px rgba(82, 221, 255, 0.18),
-    0 0 4px rgba(233, 249, 255, 0.78);
+    0 0 10px rgba(120, 250, 251, 0.35),
+    0 0 20px rgba(54, 122, 229, 0.15);
 `
 
 export const CutLine = styled(Box, {
@@ -327,19 +329,37 @@ export const CutLine = styled(Box, {
   border-radius: 999px;
   background: linear-gradient(
     90deg,
-    rgba(255, 58, 58, 0.9) 0%,
-    rgba(255, 64, 64, 0.94) 52%,
-    rgba(255, 76, 76, 0.96) 76%,
-    rgba(255, 136, 136, 0.96) 88%,
-    rgba(255, 235, 235, 0.98) 95%,
-    rgba(255, 255, 255, 1) 100%
+    rgba(220, 55, 55, 0.55) 0%,
+    rgba(220, 55, 55, 0.9) 20%,
+    rgba(220, 55, 55, 0.9) 80%,
+    rgba(220, 55, 55, 0.55) 100%
   );
   box-shadow:
-    0 0 14px rgba(255, 96, 96, 0.48),
-    0 0 26px rgba(255, 72, 72, 0.18),
-    0 0 4px rgba(255, 255, 255, 0.96);
+    0 0 12px rgba(220, 55, 55, 0.38),
+    0 0 24px rgba(220, 55, 55, 0.18),
+    0 0 3px rgba(220, 55, 55, 0.6);
+  overflow: hidden;
   opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   will-change: transform, opacity;
   pointer-events: none;
   z-index: 3;
+`
+
+export const CutHighlight = styled(Box)`
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(220, 55, 55, 0) 0%,
+    rgba(245, 88, 88, 0.45) 12%,
+    rgba(252, 160, 155, 0.82) 29%,
+    rgba(255, 210, 205, 1) 50%,
+    rgba(252, 160, 155, 0.82) 71%,
+    rgba(245, 88, 88, 0.45) 88%,
+    rgba(220, 55, 55, 0) 100%
+  );
+  box-shadow:
+    0 0 10px rgba(255, 210, 205, 0.35),
+    0 0 20px rgba(220, 55, 55, 0.15);
 `
