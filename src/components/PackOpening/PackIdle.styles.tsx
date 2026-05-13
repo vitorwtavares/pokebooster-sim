@@ -241,11 +241,11 @@ export const PackTopStrip = styled(Box)`
     height: 12px;
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.38) 0%,
-      rgba(241, 244, 248, 0.78) 28%,
-      rgba(124, 132, 145, 0.88) 50%,
-      rgba(232, 236, 242, 0.72) 72%,
-      rgba(255, 255, 255, 0.28) 100%
+      rgb(255, 255, 255) 0%,
+      rgb(248, 251, 255) 28%,
+      rgb(200, 210, 228) 50%,
+      rgb(240, 244, 252) 72%,
+      rgb(255, 255, 255) 100%
     );
     box-shadow:
       0 1px 2px rgba(0, 0, 0, 0.52),
