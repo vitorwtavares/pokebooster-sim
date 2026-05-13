@@ -1,20 +1,34 @@
-## Pokémon Booster Pack Simulator
-<img alt="website" width="49%" height="250" src="https://i.imgur.com/8FiuEaB.png"> <img alt="cards" width="49%" height="250" src="https://i.imgur.com/CvdXsGk.png">
+# Pokémon Booster Pack Simulator
 
-### 📖 about
-- Open up Pokémon booster packs and discover different cards from many different sets
-- Search for sets in the selection menu
-- Inspect cards with parallax and spotlight effects
+<table border="0">
+  <tr>
+    <td><img src="docs/homepage.png" /></td>
+    <td><img src="docs/set_selector.png" /></td>
+  </tr>
+  <tr>
+    <td><img src="docs/card_opening.png" /></td>
+    <td><img src="docs/summary_inspector.png" /></td>
+  </tr>
+</table>
 
-### 💻 running the project
-1. Clone the repository.
-2. Install all dependencies using the ```yarn``` command.
-3. Use the ```yarn dev``` command to run the project locally on port ```5173```.
+A browser-based simulator for opening Pokémon TCG booster packs. Browse any set from the Pokémon TCG API, open a pack with a swipe gesture, and flip through your cards one by one — with parallax tilt and a full-screen inspector on click.
 
-### 🛠️ tech used
-- React
-- Vite
-- Chakra UI / emotion
-- axios
-- react-parallax-tilt
-- react-waypoint
+## Features
+
+- Animated idle pack with a swipe-to-open gesture
+- Set selector with search and paginated carousel across 150+ sets
+- Card-by-card reveal with flip animations
+- Parallax tilt effect on each card
+- Full-screen card inspector with spotlight effect
+- Card rarity labels pulled from live API data
+
+## Tech
+
+- [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/)
+- [Chakra UI v3](https://chakra-ui.com/) + [Emotion](https://emotion.sh/)
+- [Framer Motion](https://www.framer.com/motion/)
+- [TanStack Query](https://tanstack.com/query)
+- [react-parallax-tilt](https://github.com/mkosir/react-parallax-tilt)
+- [react-slick](https://react-slick.neostack.com/)
+- [Pokémon TCG API](https://pokemontcg.io/)
