@@ -166,7 +166,7 @@ const PackCutting: FC<PackCuttingProps> = ({
         initial={{ opacity: 0, y: -30 }}
         transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
       >
-        <S.PackWrapper>
+        <S.PackWrapper $glowVisible={isIdle}>
           <motion.div
             style={{
               width: '100%',
@@ -211,7 +211,7 @@ const PackCutting: FC<PackCuttingProps> = ({
               {shouldShowSwipeGuide && (
                 <S.SwipeGuideRail>
                   <motion.div
-                    animate={{ x: ['-42%', '108%'] }}
+                    animate={{ x: ['-100%', '100%'] }}
                     transition={{
                       duration: 2.5,
                       ease: 'easeInOut',
@@ -239,7 +239,24 @@ const PackCutting: FC<PackCuttingProps> = ({
                     zIndex: 3,
                   }}
                 >
-                  <S.CutLine $isVisible={true} />
+                  <S.CutLine $isVisible={true}>
+                    <motion.div
+                      animate={{ x: ['-100%', '100%'] }}
+                      transition={{
+                        duration: 2.5,
+                        ease: 'easeInOut',
+                        repeat: Number.POSITIVE_INFINITY,
+                        repeatDelay: 0.1,
+                      }}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        willChange: 'transform',
+                      }}
+                    >
+                      <S.CutHighlight />
+                    </motion.div>
+                  </S.CutLine>
                 </motion.div>
               )}
               <S.CutTracker

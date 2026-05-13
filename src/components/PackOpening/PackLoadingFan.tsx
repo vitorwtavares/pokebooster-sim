@@ -26,7 +26,7 @@ const Card = styled.div<{ $rotate: number; $z: number; $delay: number }>`
   border-radius: 8px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)),
-    rgba(34, 34, 34, 0.98);
+    rgb(226, 226, 226);
   box-shadow:
     0 4px 10px rgba(0, 0, 0, 0.28),
     inset 0 0 0 1px rgba(255, 255, 255, 0.06);
@@ -50,7 +50,7 @@ const LoadingLabel = styled.div`
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgb(34, 34, 34);
+  color: rgb(255, 255, 255);
   animation: ${css`
     ${pulse} 2.2s ease-in-out infinite
   `};

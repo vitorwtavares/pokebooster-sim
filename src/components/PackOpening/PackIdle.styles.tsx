@@ -2,6 +2,32 @@ import { Box, Button, Flex } from '@chakra-ui/react'
 import { css, keyframes } from '@emotion/react'
 import styled from '@emotion/styled'
 
+import deluxePackBg from '@/assets/deluxe-pack-bg.jpg'
+import pokeballIcon from '@/assets/pokeball_pattern_icon.png'
+
+const pb = `url(${pokeballIcon})`
+
+// Top strip: 3 rows — small top, large middle (shifted half-step), small bottom
+// Row centres at ~11px, ~33px, ~55px in a 67px strip
+const topRows = [
+  ...[0, 44, 88, 132, 176, 220, 264].map((x) => ({ x, y: 0, s: 22 })), // top small
+  ...[22, 66, 110, 154, 198, 242].map((x) => ({ x, y: 18, s: 30 })), // middle large (shifted 22px)
+  ...[0, 44, 88, 132, 176, 220, 264].map((x) => ({ x, y: 45, s: 22 })), // bottom small
+]
+const topBgImage = topRows.map(() => pb).join(', ')
+const topBgSize = topRows.map(({ s }) => `${s}px ${s - 2}px`).join(', ')
+const topBgPos = topRows.map(({ x, y }) => `${x}px ${y}px`).join(', ')
+
+// Bottom strip: alternating big (32px, y=-2 so top is clipped) / small (20px, centred in 29px strip)
+// Repeat unit: big(32) + 6px gap + small(20) + 6px gap = 64px
+const bottomRows = [
+  ...[0, 64, 128, 192, 256].map((x) => ({ x, y: -2, s: 32 })), // big, clipped at top
+  ...[38, 102, 166, 230].map((x) => ({ x, y: 5, s: 20 })), // small, centred
+]
+const bottomBgImage = bottomRows.map(() => pb).join(', ')
+const bottomBgSize = bottomRows.map(({ s }) => `${s}px ${s - 2}px`).join(', ')
+const bottomBgPos = bottomRows.map(({ x, y }) => `${x}px ${y}px`).join(', ')
+
 const float = keyframes`
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
@@ -25,13 +51,19 @@ export const IdleContainer = styled(Flex)`
   gap: 50px;
 `
 
-export const PackWrapper = styled(Box)`
+export const PackWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== '$glowVisible',
+})<{ $glowVisible?: boolean }>`
   width: 288px;
   height: 480px;
   animation: ${css`
     ${float} 3.5s ease-in-out infinite
   `};
-  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 1));
+  filter: ${({ $glowVisible }) =>
+    $glowVisible
+      ? 'drop-shadow(0 20px 40px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 22px rgba(255, 255, 255, 0.35)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.15))'
+      : 'drop-shadow(0 20px 40px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 22px rgba(255, 255, 255, 0)) drop-shadow(0 0 60px rgba(255, 255, 255, 0))'};
+  transition: filter 0.4s ease;
 
   @media only screen and (max-width: 768px) {
     width: min(288px, calc(100vw - 48px));
@@ -73,6 +105,14 @@ export const PackBodySlice = styled(Box)`
   clip-path: inset(${PACK_CRIMP_SPLIT} 0 0 0 round 0 0 12px 12px);
 `
 
+export const PackArtContainer = styled(Box)`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+`
+
 export const PackImage = styled.img`
   width: 100%;
   height: 100%;
@@ -82,13 +122,52 @@ export const PackImage = styled.img`
   -webkit-user-drag: none;
 `
 
+export const PackSheen = styled(Box)`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background:
+    radial-gradient(
+      ellipse 76px 80% at -10px 36%,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.14) 28%,
+      rgba(255, 255, 255, 0) 66%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0) 22%
+    ),
+    radial-gradient(
+      ellipse at -4% 0%,
+      rgba(255, 255, 255, 0.11) 0%,
+      rgba(255, 255, 255, 0) 40%
+    ),
+    linear-gradient(
+      270deg,
+      rgba(0, 0, 0, 0.28) 0%,
+      rgba(0, 0, 0, 0.1) 6%,
+      rgba(0, 0, 0, 0) 13%
+    ),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0) 8%);
+  box-shadow:
+    inset -8px 0 20px rgba(0, 0, 0, 0.06),
+    inset 0 -8px 20px rgba(0, 0, 0, 0.05);
+`
+
 export const PackFallback = styled(Box)`
   position: relative;
   width: 100%;
   height: 100%;
   border-radius: 10px;
   overflow: hidden;
-  background-color: rgb(181, 187, 198);
+  padding-top: 22%;
+  padding-bottom: 10%;
+  background:
+    url(${deluxePackBg}) center 20% / 200% no-repeat content-box,
+    rgb(21, 21, 21);
+  background-clip: content-box, border-box;
   box-shadow:
     inset 0 2px 6px rgba(255, 255, 255, 0.12),
     inset 0 -14px 28px rgba(0, 0, 0, 0.28);
@@ -101,11 +180,11 @@ export const PackFallback = styled(Box)`
     background: linear-gradient(
       135deg,
       rgba(255, 255, 255, 0) 28%,
-      rgba(255, 255, 255, 0.1) 38%,
-      rgba(255, 255, 255, 0.62) 48%,
-      rgba(255, 255, 255, 0.92) 50%,
-      rgba(244, 247, 252, 0.64) 52%,
-      rgba(255, 255, 255, 0.12) 62%,
+      rgba(255, 255, 255, 0.05) 38%,
+      rgba(255, 255, 255, 0.42) 48%,
+      rgba(255, 255, 255, 0.77) 50%,
+      rgba(244, 247, 252, 0.44) 52%,
+      rgba(255, 255, 255, 0.06) 62%,
       rgba(255, 255, 255, 0) 72%
     );
     opacity: 0.5;
@@ -140,20 +219,33 @@ export const PackTopStrip = styled(Box)`
   );
   pointer-events: none;
 
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: ${topBgImage};
+    background-size: ${topBgSize};
+    background-position: ${topBgPos};
+    background-repeat: no-repeat;
+    filter: invert(1);
+    opacity: 0.075;
+    pointer-events: none;
+  }
+
   &::after {
     content: '';
     position: absolute;
-    bottom: -3px;
+    bottom: -6px;
     left: 0;
     right: 0;
-    height: 7px;
+    height: 12px;
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.38) 0%,
-      rgba(241, 244, 248, 0.78) 28%,
-      rgba(124, 132, 145, 0.88) 50%,
-      rgba(232, 236, 242, 0.72) 72%,
-      rgba(255, 255, 255, 0.28) 100%
+      rgb(255, 255, 255) 0%,
+      rgb(248, 251, 255) 28%,
+      rgb(200, 210, 228) 50%,
+      rgb(240, 244, 252) 72%,
+      rgb(255, 255, 255) 100%
     );
     box-shadow:
       0 1px 2px rgba(0, 0, 0, 0.52),
@@ -175,6 +267,19 @@ export const PackBottomStrip = styled(Box)`
   );
   border-top: 1px solid rgba(0, 0, 0, 0.28);
   pointer-events: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: ${bottomBgImage};
+    background-size: ${bottomBgSize};
+    background-position: ${bottomBgPos};
+    background-repeat: no-repeat;
+    filter: invert(1);
+    opacity: 0.075;
+    pointer-events: none;
+  }
 `
 
 export const PackLogo = styled.img`
@@ -187,6 +292,21 @@ export const PackLogo = styled.img`
   object-fit: contain;
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45));
+  user-select: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+`
+
+export const PackCrimpLogo = styled.img`
+  position: absolute;
+  top: calc(3% - 2px);
+  left: 50%;
+  z-index: 2;
+  width: 44%;
+  max-height: 8%;
+  object-fit: contain;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7)) brightness(1.1);
   user-select: none;
   pointer-events: none;
   -webkit-user-drag: none;
@@ -279,35 +399,37 @@ export const SwipeGuideRail = styled(Box)`
   border-radius: 999px;
   background: linear-gradient(
     90deg,
-    rgba(68, 204, 255, 0.24) 0%,
-    rgba(94, 228, 255, 0.62) 50%,
-    rgba(68, 204, 255, 0.24) 100%
+    rgba(54, 122, 229, 0.55) 0%,
+    rgba(54, 122, 229, 0.9) 20%,
+    rgba(54, 122, 229, 0.9) 80%,
+    rgba(54, 122, 229, 0.55) 100%
   );
   box-shadow:
-    0 0 12px rgba(74, 210, 255, 0.34),
-    0 0 24px rgba(74, 210, 255, 0.16),
-    0 0 3px rgba(220, 244, 255, 0.58);
+    0 0 12px rgba(54, 122, 229, 0.38),
+    0 0 24px rgba(54, 122, 229, 0.18),
+    0 0 3px rgba(54, 122, 229, 0.6);
   overflow: hidden;
   pointer-events: none;
   z-index: 2;
 `
 
 export const SwipeGuideHighlight = styled(Box)`
-  width: 34%;
+  width: 100%;
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(
     90deg,
-    rgba(177, 238, 255, 0) 0%,
-    rgba(88, 226, 255, 0.56) 30%,
-    rgba(232, 250, 255, 1) 52%,
-    rgba(88, 226, 255, 0.56) 74%,
-    rgba(177, 238, 255, 0) 100%
+    rgba(54, 122, 229, 0) 0%,
+    rgba(88, 168, 245, 0.45) 12%,
+    rgba(104, 218, 252, 0.82) 29%,
+    rgba(120, 250, 251, 1) 50%,
+    rgba(104, 218, 252, 0.82) 71%,
+    rgba(88, 168, 245, 0.45) 88%,
+    rgba(54, 122, 229, 0) 100%
   );
   box-shadow:
-    0 0 14px rgba(82, 221, 255, 0.44),
-    0 0 28px rgba(82, 221, 255, 0.18),
-    0 0 4px rgba(233, 249, 255, 0.78);
+    0 0 10px rgba(120, 250, 251, 0.35),
+    0 0 20px rgba(54, 122, 229, 0.15);
 `
 
 export const CutLine = styled(Box, {
@@ -321,19 +443,37 @@ export const CutLine = styled(Box, {
   border-radius: 999px;
   background: linear-gradient(
     90deg,
-    rgba(255, 58, 58, 0.9) 0%,
-    rgba(255, 64, 64, 0.94) 52%,
-    rgba(255, 76, 76, 0.96) 76%,
-    rgba(255, 136, 136, 0.96) 88%,
-    rgba(255, 235, 235, 0.98) 95%,
-    rgba(255, 255, 255, 1) 100%
+    rgba(220, 55, 55, 0.55) 0%,
+    rgba(220, 55, 55, 0.9) 20%,
+    rgba(220, 55, 55, 0.9) 80%,
+    rgba(220, 55, 55, 0.55) 100%
   );
   box-shadow:
-    0 0 14px rgba(255, 96, 96, 0.48),
-    0 0 26px rgba(255, 72, 72, 0.18),
-    0 0 4px rgba(255, 255, 255, 0.96);
+    0 0 12px rgba(220, 55, 55, 0.38),
+    0 0 24px rgba(220, 55, 55, 0.18),
+    0 0 3px rgba(220, 55, 55, 0.6);
+  overflow: hidden;
   opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   will-change: transform, opacity;
   pointer-events: none;
   z-index: 3;
+`
+
+export const CutHighlight = styled(Box)`
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(220, 55, 55, 0) 0%,
+    rgba(245, 88, 88, 0.45) 12%,
+    rgba(252, 160, 155, 0.82) 29%,
+    rgba(255, 210, 205, 1) 50%,
+    rgba(252, 160, 155, 0.82) 71%,
+    rgba(245, 88, 88, 0.45) 88%,
+    rgba(220, 55, 55, 0) 100%
+  );
+  box-shadow:
+    0 0 10px rgba(255, 210, 205, 0.35),
+    0 0 20px rgba(220, 55, 55, 0.15);
 `
