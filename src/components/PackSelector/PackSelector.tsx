@@ -220,9 +220,9 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
                       ref={sliderRef}
                       {...sliderSettings}
                     >
-                      {filteredPacks.map((pack) => (
+                      {filteredPacks.map((pack, index) => (
                         <div key={pack.id}>
-                          <S.SetCard>
+                          <S.SetCard onClick={() => sliderRef.current?.slickGoTo(index)}>
                             <S.SetCardChrome />
                             <S.SetCardBody>
                               <S.SetSeriesLabel>Booster set</S.SetSeriesLabel>
