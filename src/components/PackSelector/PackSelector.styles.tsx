@@ -184,6 +184,12 @@ export const SliderShell = styled(Box)`
 
   .slick-slide {
     height: auto;
+    outline: none;
+
+    &:focus,
+    &:focus-visible {
+      outline: none;
+    }
 
     & > div {
       display: flex;

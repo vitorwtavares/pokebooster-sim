@@ -56,7 +56,6 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
   }, [filteredPacks, selectedPack.id])
 
   const [activeIndex, setActiveIndex] = useState(0)
-  const userNavigatedRef = useRef(false)
 
   const [slidesToShow, setSlidesToShow] = useState(() =>
     typeof window === 'undefined' ? 5 : computeSlidesToShow(window.innerWidth),
@@ -75,27 +74,32 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
 
   useEffect(() => {
     if (!isOpen) {
-      userNavigatedRef.current = false
       setSearchInput('')
       setSearchQuery('')
+      setActiveIndex(0)
       return
     }
-    if (selectedPackIndex >= 0) {
-      setActiveIndex(selectedPackIndex)
+    const idx = boosterPacks.findIndex((pack) => pack.id === selectedPack.id)
+    const target = idx >= 0 ? idx : 0
+    setActiveIndex(target)
+    if (target > 0) {
+      requestAnimationFrame(() => {
+        sliderRef.current?.slickGoTo(target, true)
+      })
     }
-  }, [isOpen, selectedPackIndex])
+  }, [isOpen])
 
   // When search results change, jump back to slide 0
   useEffect(() => {
     setActiveIndex(0)
-    userNavigatedRef.current = false
-    sliderRef.current?.slickGoTo(0, true)
   }, [searchQuery])
 
-  const activePack =
-    filteredPacks.length > 0 && activeIndex >= 0
-      ? (filteredPacks[activeIndex] ?? null)
-      : null
+  const safeActiveIndex =
+    filteredPacks.length > 0
+      ? Math.min(Math.max(activeIndex, 0), filteredPacks.length - 1)
+      : -1
+
+  const activePack = safeActiveIndex >= 0 ? filteredPacks[safeActiveIndex] : null
 
   const activePackRef = useRef(activePack)
   useEffect(() => {
@@ -138,11 +142,8 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
     centerMode: true,
     centerPadding: '0px',
     dots: false,
-    infinite: filteredPacks.length > slidesToShow,
-    initialSlide: Math.max(
-      userNavigatedRef.current ? activeIndex : selectedPackIndex,
-      0,
-    ),
+    infinite: filteredPacks.length > 1,
+    initialSlide: 0,
     slidesToScroll: 1,
     slidesToShow,
     speed: 180,
@@ -150,14 +151,11 @@ const PackSelector: FC<PackSelectorProps> = ({ isOpen, onToggle }) => {
     waitForAnimate: false,
     afterChange: (current: number) => {
       setActiveIndex(current)
-      userNavigatedRef.current = true
     },
   }
 
   const selectionPositionLabel =
-    filteredPacks.length > 0 && activeIndex >= 0
-      ? `${activeIndex + 1} / ${filteredPacks.length}`
-      : null
+    safeActiveIndex >= 0 ? `${safeActiveIndex + 1} / ${filteredPacks.length}` : null
 
   return (
     <S.SelectorRoot>
